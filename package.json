@@ -84,7 +84,7 @@
     "@chitrank2050/git-hygiene": "^0.4.11",
     "@clack/prompts": "^1.2.0",
     "@eslint/js": "^10.0.1",
-    "@joshwooding/vite-plugin-react-docgen-typescript": "^0.7.0",
+    "@joshwooding/vite-plugin-react-docgen-typescript": "^0.8.0",
     "@testing-library/jest-dom": "^7.0.0",
     "@testing-library/react": "^16.3.2",
     "@types/node": "^25.6.0",
@@ -103,7 +103,7 @@
     "jsdom": "^30.0.0",
     "lefthook": "^2.1.6",
     "markdownlint-cli": "^0.49.1",
-    "oxc-minify": "^0.143.0",
+    "oxc-minify": "^0.148.0",
     "picocolors": "^1.1.1",
     "prettier": "^3.8.3",
     "react": "^19.2.5",
@@ -112,10 +112,10 @@
     "typescript-eslint": "^8.59.1",
     "vite": "^8.0.10",
     "vite-plugin-dts": "^5.0.0",
-    "vitepress": "2.0.0-alpha.19",
+    "vitepress": "2.0.0-alpha.20",
     "vitest": "^4.1.5"
   },
-  "packageManager": "pnpm@11.21.0",
+  "packageManager": "pnpm@11.26.0",
   "engines": {
     "node": ">=24.0.0",
     "pnpm": ">=9.0.0"
