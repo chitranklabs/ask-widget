@@ -33,10 +33,13 @@ function handleCancel(value) {
 // ── Execution Logic ──────────────────────────────────────────────────────────
 const ACTIONS = {
   // Obliviate
-  build: () => runCommand('rm -rf dist'),
+  build: () =>
+    runCommand(
+      'rm -rf dist dist-app dist-ssr website/.next website/out storybook-static coverage release-artifacts',
+    ),
   lockfiles: () => runCommand('rm -f pnpm-lock.yaml package-lock.json yarn.lock bun.lockb'),
-  cache: () => runCommand('rm -rf .eslintcache'),
-  node_modules: () => runCommand('rm -rf node_modules'),
+  cache: () => runCommand('rm -rf .eslintcache .turbo website/.turbo'),
+  node_modules: () => runCommand('rm -rf node_modules website/node_modules'),
 
   // Git
   changeset: () => runCommand('pnpm changeset'),
@@ -59,10 +62,10 @@ async function modeObliviate() {
   const choices = await multiselect({
     message: '🧹 Obliviate - select what to obliterate',
     options: [
-      { value: 'build', label: 'Build artifacts', hint: 'dist/' },
-      { value: 'node_modules', label: 'Dependencies', hint: 'node_modules/' },
+      { value: 'build', label: 'Build artifacts', hint: 'dist/, website/.next, out/' },
+      { value: 'node_modules', label: 'Dependencies', hint: 'root & website node_modules/' },
       { value: 'lockfiles', label: 'Lockfiles', hint: 'pnpm-lock.yaml…' },
-      { value: 'cache', label: 'Internal caches', hint: '.eslintcache' },
+      { value: 'cache', label: 'Internal caches', hint: '.eslintcache, .turbo' },
     ],
     required: true,
   });

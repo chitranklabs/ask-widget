@@ -9,12 +9,14 @@ import { defineConfig, globalIgnores } from 'eslint/config';
 export default defineConfig([
   globalIgnores([
     'dist',
+    'website/**',
     'node_modules',
     'coverage',
     'eslint.config.js',
     'lefthook.yml',
     'pnpm-lock.yaml',
-    'vite.config.ts',
+    'vitest.config.ts',
+    'vite.config.lib.ts',
     'cliff.toml',
   ]),
   {

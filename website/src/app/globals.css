@@ -1,0 +1,314 @@
+@import 'tailwindcss';
+@import '@chitrank2050/monoline-ui/theme.css';
+
+/* =============================================================================
+ * ask-widget Design System (Hallmark & Apple Technical Craft)
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Foundations:
+ *   - Color: OKLCH perceptually uniform neutral obsidian & crisp titanium
+ *   - Materials: Optical frosted glass (backdrop-filter: blur(20px) saturate(180%))
+ *   - Tactile Feedback: Instant :active scale response (80ms spring recovery)
+ *   - Typography: Optical tracking (-0.035em display, tabular mono figures)
+ *   - Anti-AI Craft: No neon halos, clean technical depth, precision zinc craft
+ * ========================================================================== */
+
+/* ─── DARK THEME (Default · Obsidian Titanium) ─── */
+:root,
+.dark,
+[data-theme='dark'] {
+  --background: oklch(13.5% 0.006 260);
+  --foreground: oklch(97% 0.003 240);
+
+  --surface: oklch(17% 0.008 260 / 0.75);
+  --surface-2: oklch(21% 0.01 260 / 0.85);
+  --surface-3: oklch(26% 0.012 260);
+  --surface-code: oklch(11.5% 0.006 260);
+
+  --card: oklch(17% 0.008 260 / 0.75);
+  --card-foreground: oklch(97% 0.003 240);
+
+  --popover: oklch(17% 0.008 260 / 0.95);
+  --popover-foreground: oklch(97% 0.003 240);
+
+  --primary: oklch(97% 0.003 240);
+  --primary-foreground: oklch(13.5% 0.006 260);
+
+  --secondary: oklch(21% 0.01 260 / 0.85);
+  --secondary-foreground: oklch(92% 0.005 240);
+
+  --muted: oklch(21% 0.01 260);
+  --muted-foreground: oklch(65% 0.008 240);
+
+  /* Precision Craft AI Accent (Restrained, high-contrast violet-sapphire) */
+  --accent: oklch(72% 0.15 270);
+  --accent-soft: oklch(72% 0.15 270 / 0.12);
+  --accent-foreground: oklch(11% 0.01 260);
+
+  /* Status indicators */
+  --status-online: oklch(74% 0.17 155);
+  --status-online-soft: oklch(74% 0.17 155 / 0.15);
+
+  --border: oklch(25% 0.008 260 / 0.85);
+  --border-strong: oklch(36% 0.012 260 / 0.9);
+  --input: oklch(25% 0.008 260 / 0.85);
+  --ring: oklch(72% 0.15 270);
+
+  --text: oklch(97% 0.003 240);
+  --text-primary: oklch(97% 0.003 240);
+  --text-secondary: oklch(74% 0.008 240);
+  --text-muted: oklch(52% 0.008 240);
+  --text-body: oklch(84% 0.006 240);
+
+  --code: oklch(11.5% 0.006 260);
+  --code-text: oklch(92% 0.005 240);
+  --button: oklch(21% 0.01 260);
+  --button-hover: oklch(27% 0.014 260);
+
+  --shadow-xs: 0 1px 2px oklch(5% 0.01 260 / 0.4);
+  --shadow-md: 0 8px 24px -4px oklch(5% 0.01 260 / 0.5);
+  --shadow-lg: 0 18px 42px -6px oklch(5% 0.01 260 / 0.65);
+
+  color-scheme: dark;
+}
+
+/* ─── LIGHT THEME (Crisp Alabaster) ─── */
+.light,
+[data-theme='light'] {
+  --background: oklch(98.5% 0.002 240);
+  --foreground: oklch(16% 0.01 240);
+
+  --surface: oklch(100% 0 0 / 0.85);
+  --surface-2: oklch(95% 0.006 240);
+  --surface-3: oklch(91% 0.008 240);
+  --surface-code: oklch(96% 0.005 240);
+
+  --card: oklch(100% 0 0 / 0.85);
+  --card-foreground: oklch(16% 0.01 240);
+
+  --popover: oklch(100% 0 0 / 0.95);
+  --popover-foreground: oklch(16% 0.01 240);
+
+  --primary: oklch(16% 0.01 240);
+  --primary-foreground: oklch(98.5% 0.002 240);
+
+  --secondary: oklch(95% 0.006 240);
+  --secondary-foreground: oklch(16% 0.01 240);
+
+  --muted: oklch(95% 0.006 240);
+  --muted-foreground: oklch(48% 0.01 240);
+
+  --accent: oklch(46% 0.18 275);
+  --accent-soft: oklch(46% 0.18 275 / 0.1);
+  --accent-foreground: oklch(100% 0 0);
+
+  --status-online: oklch(52% 0.18 150);
+  --status-online-soft: oklch(52% 0.18 150 / 0.15);
+
+  --border: oklch(89% 0.005 240 / 0.85);
+  --border-strong: oklch(76% 0.01 240);
+  --input: oklch(89% 0.005 240 / 0.85);
+  --ring: oklch(46% 0.18 275);
+
+  --text: oklch(16% 0.01 240);
+  --text-primary: oklch(16% 0.01 240);
+  --text-secondary: oklch(34% 0.01 240);
+  --text-muted: oklch(52% 0.008 240);
+  --text-body: oklch(24% 0.01 240);
+
+  --code: oklch(95% 0.006 240);
+  --code-text: oklch(20% 0.02 240);
+  --button: oklch(95% 0.006 240);
+  --button-hover: oklch(91% 0.008 240);
+
+  --shadow-xs: 0 1px 2px oklch(20% 0.01 240 / 0.04);
+  --shadow-md: 0 8px 24px -4px oklch(20% 0.01 240 / 0.07);
+  --shadow-lg: 0 16px 36px -6px oklch(20% 0.01 240 / 0.12);
+
+  color-scheme: light;
+}
+
+/* ─── Typography & Foundations ─── */
+.font-sans {
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+.font-mono {
+  font-family: var(--font-mono), ui-monospace, monospace;
+}
+
+.font-code {
+  font-family: var(--font-code), var(--font-mono), ui-monospace, monospace;
+}
+
+.font-display {
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+::selection {
+  background: var(--accent-soft);
+  color: var(--text);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+html,
+body {
+  overflow-x: clip;
+}
+
+/* Accessible Skip Link */
+.skip-link {
+  position: fixed;
+  z-index: 1000;
+  top: 0.75rem;
+  left: 0.75rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 0.5rem;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.875rem;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: var(--shadow-md);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-1rem);
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+}
+
+.skip-link:focus-visible {
+  opacity: 1;
+  pointer-events: auto;
+  outline: none;
+  transform: translateY(0);
+}
+
+/* ─── Optical Surface Materials & Glassmorphism ─── */
+.glass-panel {
+  background: var(--surface);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid var(--border);
+}
+
+.glass-panel-elevated {
+  background: var(--surface-2);
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  border: 1px solid var(--border-strong);
+  box-shadow: var(--shadow-lg);
+}
+
+/* ─── Apple / Hallmark Interactive Physics ─── */
+.btn-tactile {
+  transition:
+    transform 0.1s cubic-bezier(0.3, 0, 0, 1),
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.btn-tactile:active {
+  transform: scale(0.97);
+}
+
+/* ─── Live Widget Simulator Container ─── */
+.sandbox-viewport {
+  background:
+    radial-gradient(circle at top, oklch(24% 0.02 270 / 0.18), transparent 70%), var(--surface-code);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ─── Streaming Token Animation ─── */
+@keyframes cursor-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+.streaming-cursor {
+  display: inline-block;
+  width: 7px;
+  height: 15px;
+  background-color: var(--accent);
+  margin-left: 3px;
+  vertical-align: middle;
+  animation: cursor-pulse 0.9s infinite;
+}
+
+/* ─── Prism Code Block Syntax Theme ─── */
+pre[class*='language-'] {
+  background: var(--surface-code);
+  color: var(--code-text);
+  font-family: var(--font-code);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  overflow-x: auto;
+}
+
+code[class*='language-'] {
+  font-family: var(--font-code);
+  font-size: 0.875rem;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.token.punctuation {
+  color: var(--text-secondary);
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol {
+  color: oklch(78% 0.16 75);
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin {
+  color: oklch(76% 0.14 150);
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+  color: var(--accent);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+  color: oklch(74% 0.16 300);
+}
+
+.token.function,
+.token.class-name {
+  color: oklch(78% 0.15 220);
+}

@@ -1,6 +1,11 @@
 node_modules
+.next
+**/.next
+.turbo
+dist
+coverage
 pnpm-lock.yaml
 CHANGELOG.md
-dist
+**/changelog.json
 .husky
 .env

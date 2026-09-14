@@ -4,13 +4,6 @@ import { resolve } from 'path';
 
 export default defineConfig({
   plugins: [react()],
-  build: {
-    target: 'esnext',
-    outDir: 'dist-app',
-    sourcemap: true,
-    minify: true,
-    cssMinify: 'lightningcss',
-  },
   resolve: {
     alias: {
       '@': resolve(import.meta.dirname, './src'),
@@ -23,11 +16,8 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       include: ['src/**'],
-      exclude: ['src/Main.tsx', 'src/env.d.ts', 'src/types/**', 'src/assets/**'],
+      exclude: ['src/env.d.ts', 'src/types/**', 'src/assets/**'],
       reporter: ['text', 'json', 'html'],
     },
-  },
-  define: {
-    __APP_ENV__: JSON.stringify(process.env.VITE_VERCEL_ENV || 'development'),
   },
 });

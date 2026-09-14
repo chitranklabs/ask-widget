@@ -1,0 +1,104 @@
+# ask-widget
+
+> Lightweight, zero-dependency floating chat widget with Server-Sent Events (SSE) token streaming and neutral zinc aesthetics. Built for React 18 & 19 and modern developer portfolios.
+
+Published as `@chitrank2050/ask-widget` on npm and JSR.
+
+## Overview & Core Capabilities
+
+- **Real-Time Token Streaming**: Built-in Server-Sent Events (SSE) reader for OpenAI-compatible `/v1/chat` endpoints or custom async generator backends.
+- **Zero Runtime Dependencies**: Completely self-contained React implementation under 14KB gzipped.
+- **Neutral Zinc & Apple Aesthetics**: Default dark and light themes using CSS variables and `@layer` encapsulation to avoid host style collisions.
+- **Headless Hooks**: Includes `useChat`, `useSSEStream`, and `useSession` for creating custom chat experiences without the default floating UI.
+- **Next.js 16 & React 19 Ready**: Full ESM and CJS bundle exports with `'use client'` safety.
+
+## Installation
+
+```bash
+# pnpm
+pnpm add @chitrank2050/ask-widget
+
+# npm
+npm install @chitrank2050/ask-widget
+
+# yarn
+yarn add @chitrank2050/ask-widget
+```
+
+## Basic Usage (Next.js / React)
+
+```tsx
+import { ChatWidget } from '@chitrank2050/ask-widget';
+import '@chitrank2050/ask-widget/style.css';
+
+export function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html>
+      <body>
+        {children}
+        <ChatWidget
+          title="Portfolio Assistant"
+          placeholder="Ask about my projects & background..."
+          apiUrl={process.env.NEXT_PUBLIC_CHAT_API_URL}
+          apiToken={process.env.NEXT_PUBLIC_CHAT_API_TOKEN}
+          position="bottom-right"
+          theme="dark"
+        />
+      </body>
+    </html>
+  );
+}
+```
+
+## Custom Streaming Generator
+
+```tsx
+import { ChatWidget, type ChatStreamHandler } from '@chitrank2050/ask-widget';
+import '@chitrank2050/ask-widget/style.css';
+
+const streamResponse: ChatStreamHandler = async function* (message, history) {
+  const response = await fetch('/api/custom-chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message, history }),
+  });
+
+  const reader = response.body?.getReader();
+  const decoder = new TextDecoder();
+
+  while (reader) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    yield decoder.decode(value);
+  }
+};
+
+export function App() {
+  return <ChatWidget streamResponse={streamResponse} />;
+}
+```
+
+## Key Props Reference
+
+- `apiUrl?: string`: Base URL of OpenAI-compatible chat backend. Automatically connects to `<apiUrl>/v1/chat`.
+- `apiToken?: string`: Bearer authentication token.
+- `position?: "bottom-right" | "bottom-left" | "bottom-center"`: Screen placement (default: `"bottom-right"`).
+- `theme?: "dark" | "light"`: Visual theme (default: `"dark"`).
+- `title?: string`: Header title (default: `"Ask AI"`).
+- `placeholder?: string`: Input field placeholder.
+- `initialMessage?: string`: Welcome message displayed in empty session.
+- `streamResponse?: (message, history) => AsyncIterable<string>`: Custom generator for full streaming control.
+- `labels?: ChatLabels`: Custom labels for `systemStatus`, `assistantTag`, `launcherLabel`.
+
+## Headless Hooks
+
+- `useChat(options)`: Core state engine managing messages, stream accumulation, text input, and reset.
+- `useSSEStream(url, options)`: Server-Sent Events chunk reader with abort controller signal.
+- `useSession(key, initial)`: Resilient localStorage hook with fallback for private browsing.
+
+## Author & Ecosystem
+
+- Author: Chitrank Agnihotri (https://chitrankagnihotri.com)
+- GitHub: https://github.com/chitranklabs/ask-widget
+- Related Tools: git-hygiene (https://githygiene.chitrankagnihotri.com), monoline-ui (https://monolineui.chitrankagnihotri.com)
+- License: MIT
