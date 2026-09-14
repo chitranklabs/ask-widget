@@ -216,6 +216,23 @@ async function runTests() {
   assert.ok(llmsText.includes('# ask-widget'), 'llms.txt must contain headline');
   assert.ok(llmsText.includes('@chitrank2050/ask-widget'), 'llms.txt must mention package name');
 
+  // 7. Brand Assets & Favicon Checks
+  console.log('  → Verifying Brand Assets, Favicons & Manifest...');
+  const { response: favRes } = await fetchRoute('/favicon.svg');
+  assert.equal(favRes.status, 200, 'favicon.svg must return HTTP 200');
+
+  const { response: iconRes } = await fetchRoute('/icon.png');
+  assert.equal(iconRes.status, 200, 'icon.png must return HTTP 200');
+
+  const { response: appleRes } = await fetchRoute('/apple-icon.png');
+  assert.equal(appleRes.status, 200, 'apple-icon.png must return HTTP 200');
+
+  const { response: ogRes } = await fetchRoute('/ask-widget-og.png');
+  assert.equal(ogRes.status, 200, 'ask-widget-og.png must return HTTP 200');
+
+  const { response: manifestRes } = await fetchRoute('/manifest.webmanifest');
+  assert.equal(manifestRes.status, 200, 'manifest.webmanifest must return HTTP 200');
+
   console.log('✅ All SEO & Schema tests passed successfully!\n');
 }
 

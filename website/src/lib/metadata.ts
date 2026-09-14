@@ -4,8 +4,8 @@ import { siteUrl } from './seo';
 
 export const socialImage = {
   url: new URL('/ask-widget-og.png', `${siteUrl}/`).toString(),
-  width: 1280,
-  height: 640,
+  width: 1024,
+  height: 1024,
   alt: 'ask-widget - A lightweight floating chat widget with SSE streaming and neutral zinc aesthetics',
 } as const;
 

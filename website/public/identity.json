@@ -1,6 +1,11 @@
 {
   "name": "Chitrank Agnihotri",
-  "alternateNames": ["Chitrank", "Agnihotri", "Chitrank Agnihotri", "About Chitrank"],
+  "alternateNames": [
+    "Chitrank",
+    "Agnihotri",
+    "Chitrank Agnihotri",
+    "About Chitrank"
+  ],
   "title": "Chitrank Agnihotri | Senior Technical Lead & AI Engineer",
   "description": "Senior Technical Lead with nine years of experience building React, Node.js, Python, distributed systems, and generative AI products for production at scale.",
   "keywords": [

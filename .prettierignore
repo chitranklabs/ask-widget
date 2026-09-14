@@ -7,5 +7,6 @@ coverage
 pnpm-lock.yaml
 CHANGELOG.md
 **/changelog.json
+**/identity.json
 .husky
 .env
