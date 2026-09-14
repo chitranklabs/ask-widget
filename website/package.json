@@ -5,8 +5,9 @@
   "type": "module",
   "scripts": {
     "sync:identity": "node scripts/sync-identity.mjs",
+    "predev": "node scripts/sync-identity.mjs",
+    "dev": "next dev --port 3006",
     "prebuild": "node scripts/sync-identity.mjs",
-    "dev": "node scripts/sync-identity.mjs && next dev --port 3006",
     "build": "next build",
     "start": "next start --port 3006",
     "clean": "rm -rf .next out",
