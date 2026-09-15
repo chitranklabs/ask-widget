@@ -1,4 +1,5 @@
 import React from 'react';
+import { Button } from '@chitrank2050/monoline-ui';
 
 export function EditorialCta() {
   return (
@@ -21,25 +22,29 @@ export function EditorialCta() {
           </p>
 
           <div className="pt-4 flex flex-wrap items-center justify-center gap-3">
-            <a
-              href="https://www.npmjs.com/package/@chitrank2050/ask-widget"
-              target="_blank"
-              rel="noreferrer"
-              className="btn-tactile inline-flex items-center gap-2 rounded-full bg-[var(--primary)] px-6 py-3.5 text-sm font-semibold text-[var(--primary-foreground)] shadow-md transition hover:opacity-90"
-            >
-              <span>Install from npm</span>
-              <span>→</span>
-            </a>
+            <Button asChild pill size="lg" variant="primary">
+              <a
+                href="https://www.npmjs.com/package/@chitrank2050/ask-widget"
+                target="_blank"
+                rel="noreferrer"
+                className="gap-2"
+              >
+                <span>Install from npm</span>
+                <span>→</span>
+              </a>
+            </Button>
 
-            <a
-              href="https://github.com/chitranklabs/ask-widget"
-              target="_blank"
-              rel="noreferrer"
-              className="btn-tactile inline-flex items-center gap-2 rounded-full border border-[var(--border-strong)] bg-[var(--surface)] px-6 py-3.5 text-sm font-medium text-[var(--text)] shadow-xs transition hover:bg-[var(--surface-3)]"
-            >
-              <span>Star Repository</span>
-              <span>★</span>
-            </a>
+            <Button asChild pill size="lg" variant="secondary">
+              <a
+                href="https://github.com/chitranklabs/ask-widget"
+                target="_blank"
+                rel="noreferrer"
+                className="gap-2"
+              >
+                <span>Star Repository</span>
+                <span>★</span>
+              </a>
+            </Button>
           </div>
 
           <p className="text-xs font-mono text-[var(--text-muted)] pt-2">

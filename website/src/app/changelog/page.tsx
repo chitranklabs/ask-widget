@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { JsonLd, getBreadcrumbJsonLd } from '@/src/components/json-ld';
+import { SectionHead, Badge } from '@chitrank2050/monoline-ui';
 import { createPageMetadata } from '@/src/lib/metadata';
 
 const changelogTitle = 'Release Changelog and Version History | ask-widget';
@@ -96,18 +97,13 @@ export default function ChangelogPage() {
       </nav>
 
       {/* Page Header */}
-      <div>
-        <div className="inline-flex items-center gap-2 rounded-full border border-[var(--border-strong)] bg-[var(--surface-2)] px-3 py-1 font-mono text-xs text-[var(--accent)]">
-          <span>VERSION_HISTORY // RELEASES</span>
-        </div>
-        <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-[var(--text)] sm:text-5xl">
-          Changelog & Releases
-        </h1>
-        <p className="mt-3 text-base text-[var(--text-secondary)]">
-          Track updates, features, and performance enhancements across every published version of
-          ask-widget.
-        </p>
-      </div>
+      <SectionHead
+        level={1}
+        size="xl"
+        eyebrow="VERSION_HISTORY // RELEASES"
+        title="Changelog & Releases"
+        subtitle="Track updates, features, and performance enhancements across every published version of ask-widget."
+      />
 
       {/* Release Timeline */}
       <div className="mt-12 space-y-10">
@@ -119,9 +115,9 @@ export default function ChangelogPage() {
           >
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border)] pb-4">
               <div className="flex items-center gap-3">
-                <span className="rounded-lg bg-[var(--surface-3)] px-3 py-1 font-mono text-sm font-bold text-[var(--text)]">
+                <Badge variant="outline" size="sm" className="font-mono font-bold">
                   v{release.version}
-                </span>
+                </Badge>
                 <h2 className="text-lg font-semibold text-[var(--text)]">{release.title}</h2>
               </div>
 

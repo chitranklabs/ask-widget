@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { Button } from '@chitrank2050/monoline-ui';
 
 const STREAM_CHUNKS = [
   { token: 'Building', ms: 12 },
@@ -93,32 +94,35 @@ export function StreamSpotlight() {
             </div>
 
             <div className="pt-3">
-              <button
-                type="button"
+              <Button
+                pill
+                size="sm"
+                variant="primary"
                 onClick={startStream}
                 disabled={isStreaming}
-                className="btn-tactile inline-flex items-center gap-2 rounded-full bg-[var(--primary)] px-5 py-2.5 text-xs font-semibold text-[var(--primary-foreground)] shadow-xs transition hover:opacity-90 disabled:opacity-50"
+                className="gap-2"
               >
                 <span>{isStreaming ? 'Streaming Chunks...' : 'Simulate SSE Stream'}</span>
-                <span className="text-[10px] font-mono">⚡ &lt;15ms</span>
-              </button>
+                <span className="text-[10px] font-mono opacity-80">⚡ &lt;15ms</span>
+              </Button>
             </div>
           </div>
 
           {/* Right Column: Live Stream Inspector Terminal */}
           <div className="lg:col-span-6">
             <div className="overflow-hidden rounded-2xl border border-[var(--border-strong)] bg-[var(--surface-code)] shadow-lg">
-              {/* Terminal Titlebar */}
+              {/* Terminal Titlebar (Clean craft header without faux OS traffic lights) */}
               <div className="flex items-center justify-between border-b border-[var(--border)] px-4 py-3 bg-[var(--surface-2)]">
-                <div className="flex items-center gap-2">
-                  <span className="h-3 w-3 rounded-full bg-red-500/80" />
-                  <span className="h-3 w-3 rounded-full bg-yellow-500/80" />
-                  <span className="h-3 w-3 rounded-full bg-green-500/80" />
+                <div className="flex items-center gap-2 font-mono text-xs text-[var(--text-secondary)]">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[var(--status-online)]" />
+                  <span className="font-semibold text-[var(--text)]">Stream Inspector</span>
                 </div>
-                <div className="font-mono text-[11px] text-[var(--text-muted)]">
+                <div className="hidden sm:block font-mono text-[11px] text-[var(--text-muted)]">
                   GET /api/chat?stream=true HTTP/2
                 </div>
-                <span className="flex h-2 w-2 rounded-full bg-[var(--status-online)]" />
+                <span className="font-mono text-[10px] text-[var(--status-online)] font-semibold">
+                  ● LIVE
+                </span>
               </div>
 
               {/* Terminal Code Body */}
@@ -135,7 +139,7 @@ export function StreamSpotlight() {
                   <div key={idx} className="flex items-center justify-between animate-fadeIn">
                     <span className="text-[var(--text)]">
                       <span className="text-[var(--text-muted)]">data: </span>
-                      <span className="text-emerald-400">"{item.token}"</span>
+                      <span className="text-[var(--status-online)]">"{item.token}"</span>
                     </span>
                     <span className="text-[10px] text-[var(--text-muted)]">{item.ms}ms</span>
                   </div>

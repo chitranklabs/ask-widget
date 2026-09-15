@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { ChatWidget, ChatStreamHandler } from '@chitrank2050/ask-widget';
+import { SectionHead } from '@chitrank2050/monoline-ui';
 
 const KNOWLEDGE_BASE: Record<string, string> = {
   stack:
@@ -87,25 +88,23 @@ export function InteractiveShowcase() {
 
   return (
     <section id="showcase" className="mx-auto max-w-5xl px-4 py-16 sm:px-6 lg:py-24">
-      {/* Section Header */}
+      {/* Section Header with Monoline SectionHead */}
       <div className="text-center max-w-2xl mx-auto mb-12">
-        <h2 className="text-3xl font-extrabold tracking-tight text-[var(--text)] sm:text-5xl">
-          See ask-widget in action
-        </h2>
-        <p className="mt-4 text-base text-[var(--text-secondary)] sm:text-lg">
-          Interact with the live widget inside the portfolio preview below. Click quick prompts or
-          type in real queries.
-        </p>
+        <SectionHead
+          level={2}
+          size="lg"
+          title="See ask-widget in action"
+          subtitle="Interact with the live widget inside the portfolio preview below. Click quick prompts or type in real queries."
+        />
       </div>
 
       {/* Simulated Browser Viewport (OpenSEO Showcase Frame) */}
       <div className="relative overflow-hidden rounded-3xl border border-[var(--border-strong)] bg-[var(--surface-2)] shadow-xl">
-        {/* Browser Chrome Header */}
+        {/* Browser Chrome Header (Minimal Craft Header without faux OS traffic lights) */}
         <div className="flex items-center justify-between border-b border-[var(--border)] px-4 py-3 bg-[var(--surface)]">
-          <div className="flex items-center gap-2">
-            <span className="h-3 w-3 rounded-full bg-red-500/80" />
-            <span className="h-3 w-3 rounded-full bg-yellow-500/80" />
-            <span className="h-3 w-3 rounded-full bg-green-500/80" />
+          <div className="flex items-center gap-2 font-mono text-xs text-[var(--text-secondary)]">
+            <span className="h-1.5 w-1.5 rounded-full bg-[var(--status-online)]" />
+            <span className="font-semibold text-[var(--text)]">Portfolio Playground</span>
           </div>
 
           <div className="flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface-2)] px-4 py-1 font-mono text-xs text-[var(--text-secondary)] w-64 justify-center">
@@ -136,7 +135,7 @@ export function InteractiveShowcase() {
 
         {/* Mock Portfolio Desktop Canvas */}
         <div
-          className={`relative min-h-[500px] p-6 sm:p-10 transition-colors duration-200 ${theme === 'dark' ? 'bg-[#09090b] text-[#fafafa]' : 'bg-[#fbf9f4] text-[#18181b]'}`}
+          className={`relative min-h-[500px] p-6 sm:p-10 transition-colors duration-200 ${theme === 'dark' ? 'bg-[var(--surface-code)] text-[var(--text)]' : 'bg-[var(--background)] text-[var(--text)]'}`}
         >
           {/* Portfolio Navbar */}
           <div className="flex items-center justify-between border-b pb-4 opacity-70 border-current">

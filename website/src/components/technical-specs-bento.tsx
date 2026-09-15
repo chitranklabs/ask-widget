@@ -1,15 +1,16 @@
 import React from 'react';
+import { SectionHead } from '@chitrank2050/monoline-ui';
 
 export function TechnicalSpecsBento() {
   return (
     <section className="mx-auto max-w-5xl px-4 py-16 sm:px-6 lg:py-20">
       <div className="text-center max-w-2xl mx-auto mb-12">
-        <h2 className="text-3xl font-extrabold tracking-tight text-[var(--text)] sm:text-4xl">
-          Engineered for technical portfolios.
-        </h2>
-        <p className="mt-3 text-sm text-[var(--text-secondary)] sm:text-base">
-          Sub-5KB performance with modern CSS cascade layers and zero runtime collisions.
-        </p>
+        <SectionHead
+          level={2}
+          size="lg"
+          title="Engineered for technical portfolios."
+          subtitle="Sub-5KB performance with modern CSS cascade layers and zero runtime collisions."
+        />
       </div>
 
       {/* Bento Grid Layout */}

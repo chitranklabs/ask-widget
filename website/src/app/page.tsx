@@ -8,6 +8,7 @@ import { JsonLd, getFAQJsonLd } from '@/src/components/json-ld';
 import { OpenSourceManifesto } from '@/src/components/open-source-manifesto';
 import { StreamSpotlight } from '@/src/components/stream-spotlight';
 import { TechnicalSpecsBento } from '@/src/components/technical-specs-bento';
+import { SectionHead } from '@chitrank2050/monoline-ui';
 import { createPageMetadata } from '@/src/lib/metadata';
 
 export const metadata: Metadata = createPageMetadata({
@@ -80,12 +81,12 @@ export default function HomePage() {
       {/* 7. FAQ Section */}
       <section id="faq" className="mx-auto max-w-4xl px-4 py-16 sm:px-6 lg:py-20">
         <div className="text-center max-w-xl mx-auto mb-12">
-          <h2 className="text-3xl font-extrabold tracking-tight text-[var(--text)] sm:text-4xl">
-            Frequently Asked Questions
-          </h2>
-          <p className="mt-3 text-sm text-[var(--text-secondary)]">
-            Everything you need to know about streaming, integration, and security.
-          </p>
+          <SectionHead
+            level={2}
+            size="lg"
+            title="Frequently Asked Questions"
+            subtitle="Everything you need to know about streaming, integration, and security."
+          />
         </div>
 
         <div className="space-y-4">

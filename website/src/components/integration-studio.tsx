@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { SectionHead, Button } from '@chitrank2050/monoline-ui';
 
 const PKG_MANAGERS = [
   { name: 'pnpm', cmd: 'pnpm add @chitrank2050/ask-widget' },
@@ -123,12 +124,12 @@ export function IntegrationStudio() {
   return (
     <section id="integration" className="mx-auto max-w-5xl px-4 py-16 sm:px-6 lg:py-20">
       <div className="text-center max-w-2xl mx-auto mb-10">
-        <h2 className="text-3xl font-extrabold tracking-tight text-[var(--text)] sm:text-4xl">
-          Install in under 30 seconds.
-        </h2>
-        <p className="mt-3 text-sm text-[var(--text-secondary)] sm:text-base">
-          Drop the widget directly into your root layout or mount it headlessly.
-        </p>
+        <SectionHead
+          level={2}
+          size="lg"
+          title="Install in under 30 seconds."
+          subtitle="Drop the widget directly into your root layout or mount it headlessly."
+        />
       </div>
 
       {/* Package Manager Selector Pill Bar */}
