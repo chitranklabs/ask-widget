@@ -30,7 +30,7 @@ jobs:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
       - name: Harden Runner 🛡️
-        uses: step-security/harden-runner@b09bb98e06d4d774595224525879c09bc6e98c40 # v2.20.1
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
         with:
           egress-policy: audit
 
@@ -47,7 +47,7 @@ jobs:
 
       - name: Get Recommended Bump 🌊
         id: bump
-        uses: chitranklabs/git-hygiene@22783c72540d66e1b851295d1961c19b6db81856 # v0.4.12
+        uses: chitranklabs/git-hygiene@48c2a75c76ae4b3ae0875d2bed55b8047188e66c # v0.5.1
         with:
           command: 'bump'
 
@@ -107,7 +107,7 @@ jobs:
           jq ".version = \"$CLEAN_VERSION\"" package.json > package.json.tmp && mv package.json.tmp package.json
 
       - name: Update CHANGELOG.md 📝
-        uses: orhun/git-cliff-action@f50e11560dce63f7c33227798f90b924471a88b5 # v4.8.0
+        uses: orhun/git-cliff-action@a9a95522b26fe6403f7bb24031f21fb573d0f5ff # v4.9.1
         id: git-cliff
         with:
           config: cliff.toml
