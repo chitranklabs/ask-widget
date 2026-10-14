@@ -1,1 +1,0 @@
-import{H as e,V as t,et as n,j as r}from"./chunks/framework.JoxZRDkC.js";var i=JSON.parse(`{"title":"Theming","description":"","frontmatter":{},"headers":[],"relativePath":"theming.md","filePath":"theming.md"}`),a={name:`theming.md`};function o(r,i,a,o,s,c){return n(),t(`div`,null,[...i[0]||=[e("",10)]])}var s=r(a,[[`render`,o]]);export{i as __pageData,s as default};

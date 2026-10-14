@@ -1,0 +1,53 @@
+/* Shared website and documentation palette. Resolved by the active color scheme. */
+:root {
+  --background: light-dark(oklch(98.2% 0.006 85), oklch(13.5% 0.006 260));
+  --foreground: light-dark(oklch(18% 0.01 240), oklch(97% 0.003 240));
+  --surface: light-dark(oklch(100% 0 0 / 0.88), oklch(17% 0.008 260 / 0.75));
+  --surface-2: light-dark(oklch(96% 0.008 85), oklch(21% 0.01 260 / 0.85));
+  --surface-3: light-dark(oklch(92% 0.01 85), oklch(26% 0.012 260));
+  --surface-code: light-dark(oklch(96.5% 0.006 85), oklch(11.5% 0.006 260));
+  --card: light-dark(oklch(100% 0 0 / 0.9), oklch(17% 0.008 260 / 0.75));
+  --card-foreground: light-dark(oklch(18% 0.01 240), oklch(97% 0.003 240));
+  --popover: light-dark(oklch(100% 0 0 / 0.96), oklch(17% 0.008 260 / 0.95));
+  --popover-foreground: light-dark(oklch(18% 0.01 240), oklch(97% 0.003 240));
+  --primary: light-dark(oklch(18% 0.01 240), oklch(97% 0.003 240));
+  --primary-foreground: light-dark(oklch(98.2% 0.006 85), oklch(13.5% 0.006 260));
+  --secondary: light-dark(oklch(95% 0.008 85), oklch(21% 0.01 260 / 0.85));
+  --secondary-foreground: light-dark(oklch(18% 0.01 240), oklch(92% 0.005 240));
+  --muted: light-dark(oklch(94% 0.008 85), oklch(21% 0.01 260));
+  --muted-foreground: light-dark(oklch(46% 0.012 85), oklch(65% 0.008 240));
+  --accent: light-dark(oklch(46% 0.18 275), oklch(72% 0.15 270));
+  --accent-soft: light-dark(oklch(46% 0.18 275 / 0.1), oklch(72% 0.15 270 / 0.12));
+  --accent-foreground: light-dark(oklch(100% 0 0), oklch(11% 0.01 260));
+  --status-online: light-dark(oklch(52% 0.18 150), oklch(74% 0.17 155));
+  --status-online-soft: light-dark(oklch(52% 0.18 150 / 0.15), oklch(74% 0.17 155 / 0.15));
+  --border: light-dark(oklch(90% 0.008 85 / 0.9), oklch(25% 0.008 260 / 0.85));
+  --border-strong: light-dark(oklch(78% 0.012 85), oklch(36% 0.012 260 / 0.9));
+  --input: light-dark(oklch(90% 0.008 85 / 0.9), oklch(25% 0.008 260 / 0.85));
+  --ring: light-dark(oklch(46% 0.18 275), oklch(72% 0.15 270));
+  --text: light-dark(oklch(18% 0.01 240), oklch(97% 0.003 240));
+  --text-primary: light-dark(oklch(18% 0.01 240), oklch(97% 0.003 240));
+  --text-secondary: light-dark(oklch(36% 0.01 240), oklch(74% 0.008 240));
+  --text-muted: light-dark(oklch(52% 0.008 240), oklch(52% 0.008 240));
+  --text-body: light-dark(oklch(24% 0.01 240), oklch(84% 0.006 240));
+  --code: light-dark(oklch(95.5% 0.007 85), oklch(11.5% 0.006 260));
+  --code-text: light-dark(oklch(20% 0.02 240), oklch(92% 0.005 240));
+  --button: light-dark(oklch(95% 0.008 85), oklch(21% 0.01 260));
+  --button-hover: light-dark(oklch(91% 0.01 85), oklch(27% 0.014 260));
+  --shadow-xs: light-dark(0 1px 2px oklch(20% 0.01 240 / 0.04), 0 1px 2px oklch(5% 0.01 260 / 0.4));
+  --shadow-md: light-dark(
+    0 8px 24px -4px oklch(20% 0.01 240 / 0.07),
+    0 8px 24px -4px oklch(5% 0.01 260 / 0.5)
+  );
+  --shadow-lg: light-dark(
+    0 16px 36px -6px oklch(20% 0.01 240 / 0.12),
+    0 18px 42px -6px oklch(5% 0.01 260 / 0.65)
+  );
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+}
+:root[data-theme='light'] {
+  color-scheme: light;
+}

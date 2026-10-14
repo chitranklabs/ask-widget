@@ -1,0 +1,595 @@
+<!-- /ask-widget/ -->
+ask-widget provides a floating chat interface, a streaming response adapter and
+headless hooks. Use the supplied widget or compose your own interface around
+`useChat`, `useSSEStream` and `useSession`.
+
+## Start with a working example
+
+Follow [Getting started](/ask-widget/getting-started) to install the scoped package and
+render a demo. Then connect a backend using the [SSE contract](/ask-widget/backend), or
+supply a custom response handler from the [API reference](/ask-widget/api).
+
+## Choose your integration
+
+- [Next.js and Vite](/ask-widget/integrations): client boundaries and stylesheet imports.
+- [Theming](/ask-widget/theming): light/dark presets and custom colors.
+- [Standalone hooks](/ask-widget/hooks): custom UI and browser-local persistence.
+- [Troubleshooting](/ask-widget/troubleshooting): missing styles, network failures and history.
+
+## Read with an agent
+
+Use Copy Page for a guide’s Markdown, `/ask-widget/llms.txt` to discover pages,
+and `/ask-widget/llms-full.txt` for the full published documentation. Examples
+are reference material; verify commands against your installed package version.
+
+## Contribute
+
+Read [Architecture](/ask-widget/architecture), [Development](/ask-widget/development) and
+[Maintenance](/ask-widget/maintenance) before changing the package. Release history is
+available in [Changelog](/ask-widget/changelog).
+
+---
+
+<!-- /ask-widget/api -->
+# API reference
+
+## ChatWidget props
+
+Props are generated from the installed repository source. `streamResponse` takes precedence over `apiUrl` and `apiToken`; no backend props selects demo mode.
+
+ChatWidget props
+
+| Name | Type | Default | Description |
+| --- | --- | --- | --- |
+| `apiUrl` | `string \| undefined` | `—` | Base URL of your chat API. When provided (without a custom \`streamResponse\`), the widget will automatically use \`useSSEStream\` to connect to \`\<apiUrl\>/v1/chat\` with an OpenAI-compatible payload. |
+| `apiToken` | `string \| undefined` | `—` | Bearer token for API authentication. Browser-visible token. Use only a short-lived token scoped to your backend. Keep private provider credentials on the server; frontend environment variables do not conceal secrets. |
+| `position` | `ChatPosition \| undefined` | `bottom-right` | Position of the floating button and chat panel. |
+| `theme` | `ChatTheme \| undefined` | `dark` | Color theme preset. |
+| `colors` | `ChatColors \| undefined` | `—` | Custom color overrides - merged with theme defaults. |
+| `title` | `string \| undefined` | `Ask AI` | Title shown in the chat panel header. |
+| `placeholder` | `string \| undefined` | `Ask me anything...` | Placeholder text in the message input. |
+| `initialMessage` | `string \| undefined` | `Hello! How can I help you today?` | First message displayed when the panel opens. |
+| `defaultOpen` | `boolean \| undefined` | `false` | Whether the chat panel starts open. |
+| `labels` | `ChatLabels \| undefined` | `—` | Custom text labels for technical indicators in the UI. |
+| `persistenceKey` | `string \| undefined` | `ask_widget_session` | The localStorage key used to persist chat history. |
+| `streamResponse` | `ChatStreamHandler \| undefined` | `—` | Custom response handler - takes full control of streaming. Use this when you need custom fetch logic, auth flows, or a non-SSE backend. When provided, \`apiUrl\` and \`apiToken\` are ignored. |
+
+## `ChatStreamHandler` Type
+
+If you have a non-standard API or require custom fetch logic, you can pass a `streamResponse` handler:
+
+```ts
+export type ChatStreamResult =
+  string | AsyncIterable<string> | Promise<string | AsyncIterable<string>>;
+
+export interface ChatStreamContext {
+  signal: AbortSignal;
+}
+export type ChatStreamHandler = (
+  message: string,
+  history: ChatMessage[],
+  context?: ChatStreamContext,
+) => ChatStreamResult;
+```
+
+### Example Usage
+
+```tsx
+import { ChatWidget, type ChatStreamHandler } from '@chitrank2050/ask-widget';
+
+const streamResponse: ChatStreamHandler = async (message, history) => {
+  const response = await fetch('/api/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message, history }),
+  });
+  if (!response.ok) throw new Error('Chat request failed');
+  return response.text();
+};
+
+export function Assistant() {
+  return <ChatWidget streamResponse={streamResponse} />;
+}
+```
+
+This example expects a plain-text response from your own backend. For token streaming, use the [SSE adapter](/ask-widget/backend) or return an async iterable that decodes your backend’s stream.
+
+---
+
+<!-- /ask-widget/architecture -->
+This document describes the high-level architecture and design of `@chitrank2050/ask-widget`.
+
+## Component Layer
+
+The main entry point is the `ChatWidget` component. It renders a floating chat action button and a collapsible chat panel containing:
+
+- **Message List**: Renders conversation history as plain text with user/assistant message variants.
+- **Input Area**: Captures user text and manages the submission state.
+
+## State & Hooks Layer (Headless API)
+
+The business logic is decoupled from the UI using custom hooks:
+
+- `useChat`: Manages state for the conversation (messages array, loading state, input state).
+- `useSSEStream`: Connects to the SSE streaming API and streams tokens sequentially.
+- `useSession`: Manages state persistence across page reloads using `localStorage`.
+
+## Style & Presentation Layer
+
+The UI is styled using Vanilla CSS with CSS Cascade Layers (`@layer`) to organize style precedence; CSS layers do not provide selector isolation. Variables are driven by HSL tokens conforming to the neutral zinc palette.
+
+---
+
+<!-- /ask-widget/backend -->
+## Keep credentials on the server
+
+The widget does not host a model or authenticate users. Your server owns provider
+credentials, user authorization, rate limits and request validation. Browser
+`apiToken` values are visible to users; use only short-lived, scoped credentials.
+
+## Built-in adapter
+
+`apiUrl` is concatenated with `/v1/chat`. For a same-origin backend, `apiUrl=""`
+does not select the adapter: use `useSSEStream({ apiUrl: '', path: '/api/chat' })`
+and pass its `streamResponse` to `ChatWidget`.
+
+```tsx
+'use client';
+import { ChatWidget, useSSEStream } from '@chitrank2050/ask-widget';
+import '@chitrank2050/ask-widget/styles.css';
+
+export function Assistant() {
+  const { streamResponse } = useSSEStream({ apiUrl: '', path: '/api/chat' });
+  return <ChatWidget streamResponse={streamResponse} />;
+}
+```
+
+The default body contains `messages` and `stream: true`. The default extractor
+reads `choices[0].delta.content` from JSON data lines and stops on `[DONE]`.
+The path is an ask-widget convention, not a promise that every provider exposes
+`/v1/chat`. Adapt `path`, `buildBody` and `extractChunk` to your backend.
+
+The parser accepts multiline JSON data events, optional spaces after `data:`,
+CR/LF line endings and UTF-8 characters split across network chunks. It also accepts
+an unterminated final JSON frame at EOF. It does not implement EventSource
+reconnection or retry fields.
+
+`useChat` supplies history including the current user message exactly once. The
+default request body uses that history without duplicating the prompt. A standalone
+adapter call can supply prior history; the adapter appends the prompt unless it is
+already the last user message.
+
+## Cancel a response
+
+Closing the panel, pressing Escape or resetting the conversation cancels the active
+response. `useChat` also exposes `cancelResponse()`. The built-in adapter aborts
+fetch and cancels its reader. Custom handlers receive an optional third argument
+with an `AbortSignal`; pass it to your network request:
+
+```tsx
+import type { ChatStreamHandler } from '@chitrank2050/ask-widget';
+
+const streamResponse: ChatStreamHandler = async (message, history, context) => {
+  const response = await fetch('/api/chat', {
+    method: 'POST',
+    signal: context?.signal,
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message, history }),
+  });
+  if (!response.ok) throw new Error('Chat request failed');
+  return response.text();
+};
+```
+
+Existing two-argument handlers continue to work. Their late results are ignored
+after cancellation, but stopping custom network or server work requires the handler
+to honor the signal.
+
+## Cross-origin requests
+
+A remote backend must allow your website origin, POST requests and any required
+headers in its CORS policy. Do not disable browser security to work around CORS.
+
+## Custom protocols
+
+Supply a [ChatStreamHandler](/ask-widget/api#chatstreamhandler-type) when your response
+format differs. It can return text, a promise of text or an async iterable of
+text chunks. Rendered message content is plain text; Markdown rendering is not
+part of the current widget.
+
+---
+
+<!-- /ask-widget/changelog -->
+## Published releases
+
+Read [GitHub Releases](https://github.com/chitranklabs/ask-widget/releases) for
+published versions and release notes. The repository’s
+[CHANGELOG.md](https://github.com/chitranklabs/ask-widget/blob/main/CHANGELOG.md)
+contains the generated change history.
+
+The library, website and documentation build independently. Use the version in
+your installed package when checking API behavior against a release.
+
+---
+
+<!-- /ask-widget/development -->
+## Install
+
+Use Node.js 24.14 or newer and the repository’s pinned pnpm version.
+
+```bash
+pnpm install --frozen-lockfile
+pnpm build:lib
+```
+
+## Run the website
+
+```bash
+pnpm dev
+```
+
+The website runs at `http://localhost:3006`. Rebuild the library after editing
+widget source because the website consumes its emitted package exports.
+
+## Run the documentation
+
+```bash
+pnpm docs:dev
+```
+
+Open `http://localhost:4181/ask-widget/`. Documentation is built by Monoline Docs
+independently of Next.js. The `/ask-widget/` base preserves existing GitHub Pages
+URLs. API props are extracted from component source before the documentation build.
+Restart docs development after changing widget prop declarations to refresh the table.
+
+## Verify
+
+```bash
+pnpm test
+pnpm typecheck
+pnpm build:lib
+pnpm docs:build
+```
+
+Do not commit `docs/dist`, package `dist` or website `.next` output.
+The website and documentation have separate deployment targets; docs output is
+never mounted into the Next.js application.
+
+## Shared site theme
+
+The website and documentation load `assets/theme.css` for their light and dark
+color tokens. Edit this file to keep both sites consistent. Website layout styles
+remain in `website/src/app/globals.css`; the Docs layout is managed by Monoline Docs.
+
+## SEO and deployment
+
+The website is deployed independently to `https://ask-widget.chitrankagnihotri.com`.
+For Vercel, set the project Root Directory to `website` and enable source files
+outside the Root Directory. `website/vercel.json` builds the library before Next.js
+and does not build or deploy documentation.
+
+Set `NEXT_PUBLIC_SITE_URL` to that production origin; canonical URLs, social URLs,
+robots and the sitemap use the same value. Vercel previews emit `noindex` and disallow
+crawling. The sitemap omits modification dates until real page revision dates are available.
+
+Monoline Docs deploys to `https://chitranklabs.github.io/ask-widget/`. Its `site`,
+`base` and `seo` configuration control canonical URLs, social metadata, publisher
+identity and the sitemap. Keep this base while existing Pages URLs are in use.
+A project site does not own the host-root `/robots.txt`; its sitemap is under the
+project base. The website's `llms.txt` links to the Docs Markdown exports.
+
+Run `pnpm --filter ask-widget-website test:seo` against a production build, or set
+`TEST_BASE_URL` to an existing local server to check its rendered metadata.
+
+Identity synchronization is explicit: run
+`pnpm --filter ask-widget-website sync:identity` to refresh the checked-in fallback,
+then review the result. Normal development and production builds do not rewrite
+that file from a remote response.
+
+`build:lib` verifies ESM and CommonJS public exports, SSR rendering and both
+stylesheet aliases after emitting the bundle. CommonJS output uses `.cjs` because
+the package is declared as an ES module.
+
+---
+
+<!-- /ask-widget/getting-started -->
+**ask-widget** is a lightweight React component for adding a streaming AI chat assistant to your developer portfolio. It’s strictly monochrome by default and designed to align with the popular "zinc/neutral" aesthetic.
+
+## Installation
+
+```bash
+# with npm
+npm install @chitrank2050/ask-widget
+
+# with pnpm
+pnpm add @chitrank2050/ask-widget
+
+# with yarn
+yarn add @chitrank2050/ask-widget
+```
+
+## Registry choice
+
+Use the npm distribution for the styled React widget; it includes the compiled
+stylesheet and its `styles.css` and legacy `style.css` aliases. The JSR distribution
+publishes TypeScript source and hooks. JSR does not support CSS module entry points,
+so the npm stylesheet aliases are not available there. Use npm when following the
+styled widget examples below.
+
+## Basic Usage
+
+To use the widget, render it at the root of your application (or any top-level layout).
+
+```tsx
+import { ChatWidget } from '@chitrank2050/ask-widget';
+import '@chitrank2050/ask-widget/styles.css';
+
+export default function App() {
+  return (
+    <main>
+      <ChatWidget
+        apiUrl="https://your-api.example.com"
+        position="bottom-right"
+        theme="dark"
+        title="Ask Anything"
+      />
+    </main>
+  );
+}
+```
+
+## Prerequisites
+
+To enable real chat streaming, you'll need an API that supports Server-Sent Events (SSE). By default, `ask-widget` expects an OpenAI-compatible endpoint at `/v1/chat` that accepts a `POST` request with a `messages` array in the body.
+
+If you don't have a backend ready yet, the widget will automatically run in **demo mode** (interactive mocked responses).
+
+## Authentication
+
+Keep private provider API keys on your server. The widget sends requests from
+the browser, so `apiToken` is visible to the person using the page. Vite
+`VITE_*` and Next.js `NEXT_PUBLIC_*` variables are public client configuration,
+not secret storage.
+
+Point `apiUrl` at your own backend, or use `streamResponse` for an authenticated
+application endpoint. If your backend requires a browser bearer token, use a
+short-lived token scoped to that user and endpoint, not a private provider key.
+
+Use `@chitrank2050/ask-widget/styles.css` for the widget stylesheet. The older
+`style.css` export remains supported for existing consumers.
+
+---
+
+<!-- /ask-widget/hooks -->
+**ask-widget** is more than just a component-it's a collection of headless hooks that you can use to build your own completely custom chat interface.
+
+## `useChat`
+
+Manages chat state, message history, and the streaming lifecycle.
+
+```tsx
+import { useChat } from '@chitrank2050/ask-widget';
+
+const {
+  messages,
+  isStreaming,
+  latency,
+  activeStreamId,
+  inputValue,
+  setInputValue,
+  sendMessage,
+  clearHistory,
+  cancelResponse,
+} = useChat({
+  initialMessage: 'Hi! How can I help?',
+  streamResponse: async function* (message) {
+    yield message.toUpperCase();
+  },
+});
+```
+
+## `useSSEStream`
+
+Handles the SSE connection, fetch headers, and token parsing from compatible SSE APIs.
+
+```tsx
+import { useSSEStream } from '@chitrank2050/ask-widget'
+
+const { streamResponse } = useSSEStream({
+  apiUrl: "https://my-api.com",
+  path: "/v1/chat",
+  // also takes customizable body builders and chunk extractors
+})
+
+<MyCustomUI onSend={(msg) => streamResponse(msg, history)} />
+```
+
+## `useSession`
+
+A simple hook to handle message persistence to `localStorage`.
+
+```tsx
+import { useSession } from '@chitrank2050/ask-widget';
+
+const { messages, setMessages, clearSession } = useSession('my_chat_session');
+```
+
+The hooks must run inside a React component or custom hook. `useSession` takes
+a persistence key and optional initial messages; it does not accept an options
+object. Treat persisted chat history as browser-local data, not secure storage.
+
+`cancelResponse()` stops the current response without clearing completed messages.
+`clearHistory()` cancels before resetting. Custom handlers can use their optional
+abort context as shown in [Backend and SSE](/ask-widget/backend#cancel-a-response).
+
+Persisted messages are validated before restoration. An unavailable storage API
+falls back to in-memory state; changing the session key loads that conversation
+without copying the previous conversation into its storage entry.
+
+---
+
+<!-- /ask-widget/integrations -->
+## Next.js App Router
+
+Wrap the interactive widget in a client component and import its stylesheet:
+
+```tsx
+'use client';
+import { ChatWidget } from '@chitrank2050/ask-widget';
+import '@chitrank2050/ask-widget/styles.css';
+
+export default function Assistant() {
+  return <ChatWidget title="Ask about this project" />;
+}
+```
+
+Render `Assistant` from your layout. This example runs demo responses. Connect
+your own endpoint using the [backend guide](/ask-widget/backend). Keep private provider
+keys in server-only environment variables.
+
+## Vite React
+
+```tsx
+import { ChatWidget } from '@chitrank2050/ask-widget';
+import '@chitrank2050/ask-widget/styles.css';
+
+export default function App() {
+  return <ChatWidget />;
+}
+```
+
+The published package declares React and React DOM 18 or newer as peers.
+Vite `VITE_*` variables and Next.js `NEXT_PUBLIC_*` variables enter browser code;
+they are suitable for public configuration, not private credentials.
+
+## Multiple widgets
+
+Give independent conversations distinct `persistenceKey` values. Otherwise they
+share the same browser-local history key. Configure positions so launchers do not
+overlap. The widget does not synchronize conversation state between open tabs.
+
+---
+
+<!-- /ask-widget/maintenance -->
+## Prepare a release
+
+Use Conventional Commits; Lefthook and git-hygiene validate commit messages.
+Run **Release 1 - Prepare PR** to calculate the next version and open a
+`release/v<version>` branch. The PR updates `package.json`, `jsr.json` and the
+generated `CHANGELOG.md` together.
+
+## Finalize
+
+Merging a labeled release PR starts **Release 2 - Finalize Tag**. The workflow
+verifies matching versions, runs library tests and types, builds the package and
+checks its packed contents before creating the tag. A conflicting existing tag
+fails explicitly; it is never overwritten.
+
+npm, JSR and the GitHub release run independently against the verified source
+commit. npm publishes only the root library, with provenance. JSR publishes its
+source package using OIDC. GitHub release notes come from git-cliff for that tag.
+Documentation deployment remains a separate main-branch workflow.
+
+## Recover a failed destination
+
+Dispatch **Release 2 - Finalize Tag** with the exact version and a `target`:
+`npm`, `jsr`, `github` or `all`. Manual recovery requires an existing tag and selects its immutable source
+commit. If tag creation failed, rerun the original merged-PR build/tag job rather
+than creating a recovery tag from the current main branch. Published npm versions and existing GitHub releases are retained;
+JSR skips versions already published. Registry or authentication errors remain
+visible failures.
+
+For a new npm publication, run the workflow from the release tag so the workflow
+commit and package source match the provenance statement. Recovery from another
+workflow ref can restore GitHub or JSR, or skip an already published npm version,
+but cannot publish a new npm version with mismatched provenance.
+
+The separate JSR recovery workflow also requires an existing version tag and
+checks both version files. Do not edit a released version or move a published tag;
+make a new release for source changes. Publishing still requires npm credentials
+or its configured trusted publisher, and the JSR repository/OIDC association.
+
+## Verify locally
+
+```bash
+pnpm test
+pnpm lint
+pnpm typecheck
+pnpm build:lib
+npm pack --dry-run
+```
+
+Use `deno publish --dry-run --allow-dirty` to validate unpublished JSR changes
+without publishing them. The dirty-tree flag is for this local dry run; CI
+publishes a clean, verified source checkout.
+
+Operational configuration lives in `.github/workflows/`, the bot action in
+`.github/actions/setup-bot/`, `lefthook.yml` and `cliff.toml`.
+
+---
+
+<!-- /ask-widget/theming -->
+**ask-widget** comes with a premium, monochrome design based on the "zinc" and "neutral" color palettes popular in the modern developer ecosystem.
+
+## Built-in Themes
+
+You can toggle between `dark` and `light` themes with the `theme` prop:
+
+```tsx
+<ChatWidget theme="light" />
+```
+
+## Custom Colors
+
+If you need to align the widget's colors with your personal site, you can pass a `colors` object:
+
+```tsx
+<ChatWidget
+  colors={{
+    primary: '#f43f5e' /* Accent color for bubbles and buttons */,
+    background: '#09090b' /* Background color of the chat panel */,
+    text: '#fafafa' /* Main text color */,
+    border: '#27272a' /* Border colors for the widget */,
+    userBubble: '#18181b' /* Background of user messages */,
+    surface: '#111113' /* Background of input and system chips */,
+  }}
+/>
+```
+
+### Note on Custom Colors
+
+These values are applied as CSS variables to ensure they are consistent across the UI. They will override the theme defaults for both `dark` and `light` presets.
+
+---
+
+<!-- /ask-widget/troubleshooting -->
+## The widget is unstyled
+
+Import `@chitrank2050/ask-widget/styles.css` once in your application. Ensure your
+build includes CSS assets; importing only headless hooks does not provide your
+custom interface with styles.
+
+## Demo responses appear instead of real responses
+
+Without a custom `streamResponse` or a non-empty `apiUrl`, the component selects
+the built-in demo. See [Backend and SSE](/ask-widget/backend) for same-origin requests.
+
+## Requests fail or responses stay empty
+
+Inspect your browser’s network panel. Check the final URL, response status,
+CORS headers and your backend’s authentication requirements. The default adapter
+expects JSON data lines with `choices[0].delta.content`; change `extractChunk`
+for a different payload. Never include credentials when sharing diagnostics.
+
+## History is shared or does not survive a reload
+
+Set a distinct `persistenceKey` per conversation. Browser storage may be disabled
+or unavailable in private browsing. Saved history is local to the browser and
+origin; it is not server synchronization or secure storage.
+
+## A custom response continues after closing the panel
+
+Close, Escape and reset cancel the active chat request and ignore late results.
+Pass the handler's optional `context.signal` to fetch to stop its network work too.
+See [Cancellation](/ask-widget/backend#cancel-a-response). Existing handlers that ignore the
+signal cannot have their remote work forcibly stopped by the widget.

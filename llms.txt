@@ -1,0 +1,16 @@
+# ask-widget docs
+
+Install, configure and integrate the streaming React chat widget.
+
+- [Introduction](/ask-widget/index.md): Add ask-widget to a React application, connect your own backend and customize the interface.
+- [API reference](/ask-widget/api.md): Source-generated ChatWidget props, response adapters and customization options.
+- [Architecture](/ask-widget/architecture.md): Understand the React components, streaming adapter and browser-local persistence.
+- [Backend and SSE](/ask-widget/backend.md): Connect the widget to your own authenticated streaming backend.
+- [Changelog](/ask-widget/changelog.md): Find published ask-widget release notes and package changes.
+- [Development](/ask-widget/development.md): Run the library, Next.js website and independent Monoline documentation locally.
+- [Getting started](/ask-widget/getting-started.md): Install the React chat widget and connect your backend.
+- [Standalone hooks](/ask-widget/hooks.md): Build a custom React chat interface with chat, SSE and persistence hooks.
+- [Next.js and Vite](/ask-widget/integrations.md): Install ask-widget in Next.js App Router or a Vite React application.
+- [Maintenance and releases](/ask-widget/maintenance.md): Prepare npm and JSR releases, publish verified tags and recover one failed destination.
+- [Theming](/ask-widget/theming.md): Configure light and dark presets and custom widget colors.
+- [Troubleshooting](/ask-widget/troubleshooting.md): Diagnose stylesheet, streaming, persistence and backend integration problems.
