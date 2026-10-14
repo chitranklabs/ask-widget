@@ -13,9 +13,10 @@ import { SectionHead } from '@chitrank2050/monoline-ui';
 import { createPageMetadata } from '@/src/lib/metadata';
 
 export const metadata: Metadata = createPageMetadata({
-  title: 'ask-widget - Minimalist AI Chat for Developer Portfolios',
+  title: 'ask-widget | Streaming React Chat for Your Website',
+  absoluteTitle: true,
   description:
-    'A lightweight floating chat widget with Server-Sent Events (SSE) streaming, zero runtime dependencies, and neutral zinc dark/light aesthetics.',
+    'Add streaming chat to a React portfolio or website with ask-widget. Configure themes, use headless hooks, and connect your own backend through SSE or response handlers.',
   path: '/',
 });
 
@@ -23,7 +24,7 @@ const FAQS = [
   {
     question: 'Can I connect ask-widget to my custom LLM backend or OpenAI?',
     answer:
-      'Yes! ask-widget connects directly to any OpenAI-compatible `/v1/chat` streaming endpoint via the `apiUrl` and `apiToken` props. If your backend uses custom auth headers, WebSockets, or a non-standard JSON stream, you can provide the `streamResponse` async generator prop to handle full streaming in headless mode.',
+      'Connect your own backend with apiUrl, which appends /v1/chat, or provide a custom streamResponse handler. Keep private provider credentials on the server; any apiToken supplied to the widget is visible in the browser.',
   },
   {
     question: 'Does ask-widget work with Next.js 16 and React 19?',
@@ -41,16 +42,16 @@ const FAQS = [
       'Zero. The published npm/JSR library contains absolutely no telemetry, tracking scripts, or external network requests. It communicates strictly with the endpoint you explicitly configure.',
   },
   {
-    question: 'How does the bundle footprint compare to other chat packages?',
+    question: 'What does the widget include in its bundle?',
     answer:
-      'While typical enterprise chatbot widgets carry 150KB–400KB of external dependencies, ask-widget compiles down to under 14KB gzipped with zero external runtime dependencies.',
+      'The package keeps React and React DOM as peer dependencies and bundles no third-party runtime libraries. Measure the current production JavaScript and CSS output when comparing bundle sizes.',
   },
 ];
 
 export default function HomePage() {
   return (
     <div className="relative overflow-hidden">
-      {/* FAQ Structured Data for Google Rich Snippets */}
+      {/* Keep structured answers consistent with the visible FAQ. */}
       <JsonLd data={getFAQJsonLd(FAQS)} />
 
       {/* Subtle Ambient Background Gradients */}

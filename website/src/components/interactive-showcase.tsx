@@ -6,10 +6,10 @@ import { SectionHead } from '@chitrank2050/monoline-ui';
 
 const KNOWLEDGE_BASE: Record<string, string> = {
   stack:
-    'My primary tech stack includes **TypeScript**, **Next.js 16**, **React 19**, **Tailwind CSS v4**, **Node.js**, and **Rust-based tooling** like Rolldown and Turbopack. I build streaming-first AI applications with sub-15ms latency.',
-  sse: '**Server-Sent Events (SSE)** provide lightweight, one-way HTTP/2 streaming from your backend to the browser. Unlike WebSockets, SSE works over standard HTTP, traverses corporate firewalls, supports HTTP/2 multiplexing, and auto-reconnects natively with zero extra client libraries.',
+    'My primary tech stack includes **TypeScript**, **Next.js 16**, **React 19**, **Tailwind CSS v4**, **Node.js**, and **Rust-based tooling** like Rolldown and Turbopack. I build streaming-first AI applications with incremental responses.',
+  sse: '**Server-Sent Events (SSE)** provide incremental responses over HTTP from your backend to the browser. The widget reads supported SSE frames with fetch; this reader does not automatically reconnect.',
   bundle:
-    '**ask-widget** compiles down to **under 14KB gzipped**. It has **zero external runtime dependencies**—only requiring React 18 or 19 as a peer dependency. That is ~100x smaller than enterprise chat widgets like Intercom (1.8MB) or Crisp (820KB).',
+    'ask-widget keeps React and React DOM as peer dependencies and bundles no third-party runtime libraries. Measure the JavaScript and CSS output of the version you install.',
   author:
     'Created by **Chitrank Agnihotri**, Senior Technical Lead and AI Systems Engineer. Visit [chitrankagnihotri.com](https://chitrankagnihotri.com) for more open-source tools!',
 };
@@ -20,7 +20,7 @@ const FEATURE_TABS = [
   {
     id: 'sse',
     label: 'Native SSE Streaming',
-    desc: 'Sub-15ms chunk parsing over HTTP/2 without heavy WebSockets.',
+    desc: 'Read supported SSE frames with the browser fetch API.',
   },
   {
     id: 'theme',
@@ -29,13 +29,13 @@ const FEATURE_TABS = [
   },
   {
     id: 'size',
-    label: 'Zero Bloat (<14KB)',
-    desc: 'Sub-14KB gzipped footprint with zero runtime dependencies.',
+    label: 'React peer dependencies',
+    desc: 'No bundled third-party runtime libraries.',
   },
   {
     id: 'layer',
-    label: 'CSS @layer Isolation',
-    desc: 'Zero style collisions with portfolio Tailwind or CSS resets.',
+    label: 'CSS cascade layers',
+    desc: 'Organized styles; check compatibility with host resets.',
   },
   {
     id: 'hooks',
@@ -45,12 +45,12 @@ const FEATURE_TABS = [
   {
     id: 'placement',
     label: 'Configurable Placement',
-    desc: 'Seamless bottom-right, bottom-left, or custom coordinate offsets.',
+    desc: 'Seamless bottom-right, bottom-left, or bottom-center placement.',
   },
   {
     id: 'generators',
     label: 'Custom Async Generators',
-    desc: 'Connect OpenAI /v1/chat, Ollama, LangChain, or custom endpoints.',
+    desc: 'Connect your own backend through a custom response handler.',
   },
   {
     id: 'react19',
@@ -76,7 +76,7 @@ export function InteractiveShowcase() {
     } else if (lower.includes('who') || lower.includes('author') || lower.includes('chitrank')) {
       answer = KNOWLEDGE_BASE.author;
     } else {
-      answer = `You asked: "${message}". In production, ask-widget forwards queries to your streaming endpoint via SSE and renders tokens with instant word-boundary chunking!`;
+      answer = `You asked: "${message}". In production, ask-widget forwards queries to your streaming endpoint via SSE and renders tokens with incremental plain-text messages!`;
     }
 
     const words = answer.split(' ');

@@ -1,5 +1,6 @@
 'use client';
 
+import { packageVersion } from '@/src/lib/seo';
 import React, { useState } from 'react';
 import Link from 'next/link';
 
@@ -23,10 +24,10 @@ export function HomeHero() {
           <span className="relative inline-flex h-2 w-2 rounded-full bg-[var(--status-online)]" />
         </span>
         <span className="font-mono text-xs font-medium tracking-tight text-[var(--text)]">
-          ask-widget v0.6.1
+          ask-widget v{packageVersion}
         </span>
         <span className="h-3 w-px bg-[var(--border-strong)]" />
-        <span className="text-xs text-[var(--text-secondary)]">Zero Dependencies • &lt;14KB</span>
+        <span className="text-xs text-[var(--text-secondary)]">React • SSE • MIT</span>
       </div>
 
       {/* Main Editorial Headline */}
@@ -37,7 +38,7 @@ export function HomeHero() {
       {/* Editorial Subtitle */}
       <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-[var(--text-secondary)] sm:text-xl font-normal">
         Drop-in floating AI chat with native Server-Sent Events (SSE) token streaming. Built with
-        the neutral zinc aesthetic, CSS layer isolation, and sub-15ms chunk parsing.
+        dark and light themes, customizable styling, and headless React hooks.
       </p>
 
       {/* Primary Actions */}

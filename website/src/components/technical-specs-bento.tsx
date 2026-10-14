@@ -3,13 +3,13 @@ import { SectionHead } from '@chitrank2050/monoline-ui';
 
 export function TechnicalSpecsBento() {
   return (
-    <section className="mx-auto max-w-5xl px-4 py-16 sm:px-6 lg:py-20">
+    <section id="features" className="mx-auto max-w-5xl px-4 py-16 sm:px-6 lg:py-20">
       <div className="text-center max-w-2xl mx-auto mb-12">
         <SectionHead
           level={2}
           size="lg"
           title="Engineered for technical portfolios."
-          subtitle="Sub-5KB performance with modern CSS cascade layers and zero runtime collisions."
+          subtitle="React components, CSS theme tokens and a native streaming reader."
         />
       </div>
 
@@ -19,70 +19,37 @@ export function TechnicalSpecsBento() {
         <div className="md:col-span-2 rounded-3xl border border-[var(--border-strong)] bg-[var(--surface-2)] p-6 sm:p-8 flex flex-col justify-between">
           <div>
             <div className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border)] bg-[var(--surface)] px-2.5 py-0.5 text-[11px] font-mono text-[var(--text-muted)] mb-3">
-              BENCHMARK // GZIPPED FOOTPRINT
+              PACKAGE FOOTPRINT
             </div>
             <h3 className="text-xl font-bold text-[var(--text)]">
-              ~100x smaller than enterprise widgets
+              No bundled third-party runtime libraries
             </h3>
             <p className="mt-2 text-sm text-[var(--text-secondary)]">
-              Traditional customer support widgets bundle multi-megabyte analytics and tracking
-              runtimes. ask-widget compiles to sub-14KB with zero runtime dependencies.
+              React and React DOM are peer dependencies. The package ships JavaScript, TypeScript
+              declarations and a stylesheet.
             </p>
           </div>
 
-          <div className="mt-6 space-y-3 font-mono text-xs">
-            {/* ask-widget */}
-            <div>
-              <div className="flex justify-between text-[var(--text)] mb-1 font-semibold">
-                <span className="flex items-center gap-1.5">
-                  <span className="h-2 w-2 rounded-full bg-[var(--status-online)]" />
-                  @chitrank2050/ask-widget
-                </span>
-                <span className="text-[var(--status-online)]">13.8 KB</span>
-              </div>
-              <div className="h-2 rounded-full bg-[var(--surface-3)] overflow-hidden">
-                <div className="h-full bg-[var(--status-online)] rounded-full w-[4%]" />
-              </div>
-            </div>
-
-            {/* Crisp */}
-            <div>
-              <div className="flex justify-between text-[var(--text-secondary)] mb-1">
-                <span>Crisp Chat SDK</span>
-                <span>820 KB</span>
-              </div>
-              <div className="h-2 rounded-full bg-[var(--surface-3)] overflow-hidden">
-                <div className="h-full bg-[var(--text-muted)] rounded-full w-[45%]" />
-              </div>
-            </div>
-
-            {/* Intercom */}
-            <div>
-              <div className="flex justify-between text-[var(--text-secondary)] mb-1">
-                <span>Intercom Messenger</span>
-                <span>1,850 KB</span>
-              </div>
-              <div className="h-2 rounded-full bg-[var(--surface-3)] overflow-hidden">
-                <div className="h-full bg-[var(--text-muted)] rounded-full w-[100%]" />
-              </div>
-            </div>
-          </div>
+          <p className="mt-6 text-xs leading-relaxed text-[var(--text-muted)]">
+            Bundle output depends on the package version, compression and consuming app. Include
+            both JavaScript and CSS, and measure React separately.
+          </p>
         </div>
 
         {/* Card 2: CSS Layer Isolation */}
         <div className="rounded-3xl border border-[var(--border-strong)] bg-[var(--surface-2)] p-6 sm:p-8 flex flex-col justify-between">
           <div>
             <div className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border)] bg-[var(--surface)] px-2.5 py-0.5 text-[11px] font-mono text-[var(--text-muted)] mb-3">
-              ZERO COLLISION
+              STYLE CASCADE
             </div>
-            <h3 className="text-xl font-bold text-[var(--text)]">CSS @layer Isolation</h3>
+            <h3 className="text-xl font-bold text-[var(--text)]">CSS cascade layers</h3>
             <p className="mt-2 text-sm text-[var(--text-secondary)]">
               Encapsulated inside{' '}
               <code className="font-mono text-xs bg-[var(--surface-code)] px-1 rounded">
                 @layer widget
               </code>{' '}
-              so your portfolio's Tailwind resets or global CSS will never bleed into the chat
-              panel.
+              to organize the stylesheet. Host resets and global selectors can still affect the
+              widget; check it alongside your app styles.
             </p>
           </div>
 
@@ -100,8 +67,8 @@ export function TechnicalSpecsBento() {
             </div>
             <h3 className="text-xl font-bold text-[var(--text)]">Native Server-Sent Events</h3>
             <p className="mt-2 text-sm text-[var(--text-secondary)]">
-              One-way HTTP/2 streaming with native reconnect, word boundary parsing, and zero socket
-              daemon overhead.
+              Reads supported SSE data frames from a fetch response. Use a custom response handler
+              for other protocols; reconnect behavior belongs to your backend integration.
             </p>
           </div>
 

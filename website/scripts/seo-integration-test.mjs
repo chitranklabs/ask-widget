@@ -6,7 +6,14 @@ import path from 'node:path';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const appRoot = path.resolve(__dirname, '..');
 
-const SITE_URL = 'https://askwidget.chitrankagnihotri.com';
+const SITE_URL = new URL(
+  process.env.NEXT_PUBLIC_SITE_URL || 'https://ask-widget.chitrankagnihotri.com',
+).origin;
+const { version } = JSON.parse(
+  await (
+    await import('node:fs/promises')
+  ).readFile(path.resolve(appRoot, '../package.json'), 'utf8'),
+);
 const HOST = '127.0.0.1';
 const PORT = Number.parseInt(process.env.SEO_TEST_PORT || '3225', 10);
 const externalBaseUrl = process.env.TEST_BASE_URL;
@@ -112,6 +119,11 @@ async function runTests() {
   console.log('  → Verifying Homepage SEO & Metadata...');
   const { response: homeRes, body: homeHtml } = await fetchRoute('/');
   assert.equal(homeRes.status, 200, 'Home route must return HTTP 200');
+  const robotsMeta = findElementByAttribute(homeHtml, 'meta', 'name', 'robots');
+  assert.ok(
+    !getAttribute(robotsMeta, 'content')?.includes('noindex'),
+    'Production homepage must be indexable',
+  );
 
   // Heading checks (Accessibility)
   const h1Matches = homeHtml.match(/<h1\b[^>]*>[\s\S]*?<\/h1>/gi) ?? [];
@@ -165,6 +177,13 @@ async function runTests() {
   const softwareSchema = homeJsonLd.find(b => b['@type'] === 'SoftwareApplication');
   assert.ok(softwareSchema, 'JSON-LD must include SoftwareApplication schema');
   assert.equal(softwareSchema.name, '@chitrank2050/ask-widget');
+  assert.equal(softwareSchema.softwareVersion, version);
+  assert.equal(webSiteSchema.about['@id'], softwareSchema['@id']);
+  assert.ok(!personSchema.sameAs.includes(SITE_URL), 'Product site is not a Person identity');
+  assert.ok(
+    !softwareSchema.featureList.some(feature => /Markdown|CDN/.test(feature)),
+    'Do not advertise unsupported features',
+  );
   assert.ok(softwareSchema.featureList?.length > 0, 'SoftwareApplication must list features');
 
   const faqSchema = homeJsonLd.find(b => b['@type'] === 'FAQPage');
@@ -175,6 +194,9 @@ async function runTests() {
   console.log('  → Verifying /changelog Route & Breadcrumbs...');
   const { response: changelogRes, body: changelogHtml } = await fetchRoute('/changelog');
   assert.equal(changelogRes.status, 200, 'Changelog route must return HTTP 200');
+  const { response: missingRes, body: missingHtml } = await fetchRoute('/nonexistent-seo-check');
+  assert.equal(missingRes.status, 404, 'Missing page must return HTTP 404');
+  assert.ok(missingHtml.includes('noindex'), 'Missing page must not be indexed');
 
   const changelogCanonical = findElementByAttribute(changelogHtml, 'link', 'rel', 'canonical');
   assert.equal(getAttribute(changelogCanonical, 'href'), `${SITE_URL}/changelog`);
@@ -192,11 +214,11 @@ async function runTests() {
   console.log('  → Verifying robots.txt directives...');
   const { response: robotsRes, body: robotsText } = await fetchRoute('/robots.txt');
   assert.equal(robotsRes.status, 200, 'robots.txt must return HTTP 200');
-  assert.ok(robotsText.includes('User-agent: *'), 'robots.txt must contain wildcard user-agent');
   assert.ok(
-    robotsText.includes('User-agent: GPTBot'),
-    'robots.txt must include AI crawler directives',
+    /^User-agent:\s*\*\s*$/im.test(robotsText),
+    'robots.txt must contain wildcard user-agent',
   );
+  assert.ok(robotsText.includes('Allow: /'), 'Production robots must allow crawling');
   assert.ok(
     robotsText.includes(`Sitemap: ${SITE_URL}/sitemap.xml`),
     'robots.txt must point to sitemap',
@@ -208,6 +230,14 @@ async function runTests() {
   assert.equal(sitemapRes.status, 200, 'sitemap.xml must return HTTP 200');
   assert.ok(sitemapXml.includes(`${SITE_URL}/`), 'sitemap must include root URL');
   assert.ok(sitemapXml.includes(`${SITE_URL}/changelog`), 'sitemap must include changelog URL');
+  assert.ok(
+    !sitemapXml.includes('<lastmod>'),
+    'Do not publish build time as a content modification date',
+  );
+  const paths = [...sitemapXml.matchAll(/<loc>(.*?)<\/loc>/g)]
+    .map(match => new URL(match[1]).pathname)
+    .toSorted();
+  assert.deepEqual(paths, EXPECTED_PATHS, 'Sitemap must contain exactly the public routes');
 
   // 6. llms.txt
   console.log('  → Verifying llms.txt...');

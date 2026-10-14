@@ -50,3 +50,23 @@ never mounted into the Next.js application.
 The website and documentation load `assets/theme.css` for their light and dark
 color tokens. Edit this file to keep both sites consistent. Website layout styles
 remain in `website/src/app/globals.css`; the Docs layout is managed by Monoline Docs.
+
+## SEO and deployment
+
+The website is deployed independently to `https://ask-widget.chitrankagnihotri.com`.
+For Vercel, set the project Root Directory to `website` and enable source files
+outside the Root Directory. `website/vercel.json` builds the library before Next.js
+and does not build or deploy documentation.
+
+Set `NEXT_PUBLIC_SITE_URL` to that production origin; canonical URLs, social URLs,
+robots and the sitemap use the same value. Vercel previews emit `noindex` and disallow
+crawling. The sitemap omits modification dates until real page revision dates are available.
+
+Monoline Docs deploys to `https://chitranklabs.github.io/ask-widget/`. Its `site`,
+`base` and `seo` configuration control canonical URLs, social metadata, publisher
+identity and the sitemap. Keep this base while existing Pages URLs are in use.
+A project site does not own the host-root `/robots.txt`; its sitemap is under the
+project base. The website's `llms.txt` links to the Docs Markdown exports.
+
+Run `pnpm --filter ask-widget-website test:seo` against a production build, or set
+`TEST_BASE_URL` to an existing local server to check its rendered metadata.

@@ -1,5 +1,5 @@
 import type { Identity } from '@/src/lib/identity';
-import { siteUrl } from '@/src/lib/seo';
+import { siteUrl, packageVersion } from '@/src/lib/seo';
 
 interface Props<T> {
   data: T;
@@ -35,14 +35,7 @@ export function getPersonJsonLd(identity: Identity) {
     },
     nationality: identity.nationality,
     knowsAbout: identity.knowsAbout,
-    sameAs: [
-      identity.socials.linkedin,
-      identity.socials.github,
-      identity.websiteUrl,
-      'https://askwidget.chitrankagnihotri.com',
-      'https://monolineui.chitrankagnihotri.com',
-      'https://githygiene.chitrankagnihotri.com',
-    ],
+    sameAs: [identity.socials.linkedin, identity.socials.github, identity.websiteUrl],
     mainEntityOfPage: {
       '@id': `${identity.websiteUrl}/#webpage`,
     },
@@ -58,7 +51,7 @@ export function getWebsiteJsonLd(identity: Identity | null, siteUrl: string) {
     description:
       'A lightweight chat widget for developer portfolios. Drop-in floating chat with SSE streaming, dark/light themes, and configurable positioning.',
     about: {
-      '@id': `${siteUrl}/#software-source-code`,
+      '@id': `${siteUrl}/#software-application`,
     },
     sameAs: [
       'https://github.com/chitranklabs/ask-widget',
@@ -82,7 +75,7 @@ export function getSoftwareApplicationJsonLd(identity: Identity | null, siteUrl:
     name: '@chitrank2050/ask-widget',
     operatingSystem: 'Platform Independent',
     applicationCategory: 'DeveloperApplication',
-    softwareVersion: '0.6.1',
+    softwareVersion: packageVersion,
     description:
       'A lightweight floating chat widget with Server-Sent Events (SSE) streaming, zero runtime dependencies, and customizable neutral zinc themes for modern portfolios and web applications.',
     url: siteUrl,
@@ -95,12 +88,11 @@ export function getSoftwareApplicationJsonLd(identity: Identity | null, siteUrl:
     },
     featureList: [
       'Real-time Server-Sent Events (SSE) Token Streaming',
-      'Zero Runtime Dependencies (<14KB gzipped footprint)',
+      'React and React DOM peer dependencies; no bundled third-party runtime libraries',
       'Neutral Zinc & Monochrome Themes (Dark and Light modes)',
       'Configurable Positioning (Bottom-Right / Bottom-Left)',
       'Headless Hooks (useChat, useSSEStream, useSession)',
-      'Markdown & Code Highlighting Support',
-      'Vanilla JS & CDN Drop-in Script Tag Support',
+      'Custom response handlers and plain-text messages',
     ],
   };
 
@@ -141,7 +133,7 @@ export function JsonLd<T extends Record<string, unknown>>({ data }: Props<T>) {
   const json = JSON.stringify({
     '@context': 'https://schema.org',
     ...data,
-  });
+  }).replace(/</g, '\\u003c');
 
   return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: json }} />;
 }

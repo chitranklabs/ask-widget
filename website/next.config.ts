@@ -1,8 +1,10 @@
 import type { NextConfig } from 'next';
+import path from 'node:path';
 
 const nextConfig: NextConfig = {
   distDir: process.env.NEXT_DIST_DIR || '.next',
   trailingSlash: false,
+  outputFileTracingRoot: path.resolve(import.meta.dirname, '..'),
   async headers() {
     return [
       {

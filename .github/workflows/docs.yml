@@ -12,6 +12,9 @@ on:
     branches: [main]
     paths:
       - 'docs/**'
+      - '.github/workflows/docs.yml'
+      - '.github/actions/setup-bot/**'
+      - 'tsconfig.app.json'
       - 'scripts/docs-deploy.sh'
       - 'package.json'
       - 'pnpm-lock.yaml'
@@ -23,6 +26,10 @@ on:
 env:
   NODE_VERSION: 24
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: documentation-${{ github.ref }}
+  cancel-in-progress: false
 
 permissions:
   contents: read

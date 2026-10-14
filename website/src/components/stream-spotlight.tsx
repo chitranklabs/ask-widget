@@ -9,7 +9,7 @@ const STREAM_CHUNKS = [
   { token: ' developer', ms: 38 },
   { token: ' portfolios', ms: 52 },
   { token: ' requires', ms: 66 },
-  { token: ' sub-15ms', ms: 80 },
+  { token: ' responsive', ms: 80 },
   { token: ' latency', ms: 94 },
   { token: ' and', ms: 108 },
   { token: ' zero', ms: 122 },
@@ -54,22 +54,22 @@ export function StreamSpotlight() {
             </div>
 
             <h2 className="text-2xl font-extrabold tracking-tight text-[var(--text)] sm:text-4xl">
-              Get instant streaming with native Server-Sent Events.
+              Show incremental responses with native Server-Sent Events.
             </h2>
 
             <p className="text-sm leading-relaxed text-[var(--text-secondary)] sm:text-base">
-              Traditional chat widgets force you into heavy WebSocket server clusters, proprietary
-              clouds, and megabytes of telemetry that destroy your Lighthouse scores.
+              Use a streaming backend to deliver an answer incrementally while keeping the chat
+              interface in your React application.
             </p>
 
             <p className="text-sm leading-relaxed text-[var(--text-secondary)]">
-              <strong className="text-[var(--text)] font-semibold">ask-widget</strong> streams
-              directly from any standard OpenAI-compatible{' '}
+              <strong className="text-[var(--text)] font-semibold">ask-widget</strong> streams from
+              your configured backend at{' '}
               <code className="font-mono text-xs bg-[var(--surface-code)] px-1.5 py-0.5 rounded text-[var(--text)]">
                 /v1/chat
               </code>{' '}
-              endpoint over HTTP/2, with automated word-boundary chunk parsing and zero WebSocket
-              overhead.
+              using the browser fetch API. Use a custom response handler when your backend returns a
+              different format.
             </p>
 
             {/* Framework Icons & Badges */}
@@ -103,7 +103,7 @@ export function StreamSpotlight() {
                 className="gap-2"
               >
                 <span>{isStreaming ? 'Streaming Chunks...' : 'Simulate SSE Stream'}</span>
-                <span className="text-[10px] font-mono opacity-80">⚡ &lt;15ms</span>
+                <span className="text-[10px] font-mono opacity-80">Simulated</span>
               </Button>
             </div>
           </div>
@@ -118,17 +118,17 @@ export function StreamSpotlight() {
                   <span className="font-semibold text-[var(--text)]">Stream Inspector</span>
                 </div>
                 <div className="hidden sm:block font-mono text-[11px] text-[var(--text-muted)]">
-                  GET /api/chat?stream=true HTTP/2
+                  Example SSE response
                 </div>
                 <span className="font-mono text-[10px] text-[var(--status-online)] font-semibold">
-                  ● LIVE
+                  ● DEMO
                 </span>
               </div>
 
               {/* Terminal Code Body */}
               <div className="p-4 font-mono text-xs text-[var(--code-text)] space-y-2 h-[260px] overflow-y-auto">
                 <div className="text-[var(--text-muted)]">
-                  // EventSource connection established (status 200 OK)
+                  // Simulated data frames — no network request
                 </div>
                 <div className="text-[var(--accent)]">
                   content-type: text/event-stream; charset=utf-8

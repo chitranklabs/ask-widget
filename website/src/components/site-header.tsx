@@ -1,5 +1,6 @@
 'use client';
 
+import { packageVersion } from '@/src/lib/seo';
 import Link from 'next/link';
 import { Button } from '@chitrank2050/monoline-ui';
 import { useTheme } from '@/src/components/theme-provider';
@@ -23,7 +24,7 @@ export function SiteHeader() {
             <span className="font-mono font-bold tracking-wider">ASK_WIDGET</span>
           </Link>
           <span className="hidden rounded-full border border-[var(--border-strong)] bg-[var(--surface-2)] px-2.5 py-0.5 font-mono text-[11px] font-medium text-[var(--text-secondary)] sm:inline-block">
-            v0.6.1
+            v{packageVersion}
           </span>
         </div>
 
@@ -32,7 +33,7 @@ export function SiteHeader() {
           aria-label="Main navigation"
           className="hidden items-center gap-6 text-sm font-medium text-[var(--text-secondary)] md:flex"
         >
-          <Link href="/#demo" className="transition-colors hover:text-[var(--text)]">
+          <Link href="/#showcase" className="transition-colors hover:text-[var(--text)]">
             Playground
           </Link>
           <Link href="/#features" className="transition-colors hover:text-[var(--text)]">

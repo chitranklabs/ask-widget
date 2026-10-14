@@ -15,7 +15,7 @@ const FRAMEWORKS = [
     name: 'Next.js (App Router)',
     code: `// app/layout.tsx
 import { ChatWidget } from '@chitrank2050/ask-widget';
-import '@chitrank2050/ask-widget/style.css';
+import '@chitrank2050/ask-widget/styles.css';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -25,8 +25,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ChatWidget
           title="Portfolio Assistant"
           placeholder="Ask about my work..."
-          apiUrl={process.env.NEXT_PUBLIC_CHAT_API}
-          apiToken={process.env.NEXT_PUBLIC_CHAT_TOKEN}
+          apiUrl="/api"
         />
       </body>
     </html>
@@ -38,7 +37,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     name: 'Vite + React',
     code: `// src/App.tsx
 import { ChatWidget } from '@chitrank2050/ask-widget';
-import '@chitrank2050/ask-widget/style.css';
+import '@chitrank2050/ask-widget/styles.css';
 
 export function App() {
   return (
@@ -59,7 +58,7 @@ export function App() {
     name: 'Custom SSE Stream',
     code: `// Custom streaming generator with useChat
 import { ChatWidget, type ChatStreamHandler } from '@chitrank2050/ask-widget';
-import '@chitrank2050/ask-widget/style.css';
+import '@chitrank2050/ask-widget/styles.css';
 
 const streamResponse: ChatStreamHandler = async function* (message, history) {
   const res = await fetch('/api/chat', {
@@ -81,27 +80,6 @@ const streamResponse: ChatStreamHandler = async function* (message, history) {
 export function App() {
   return <ChatWidget streamResponse={streamResponse} />;
 }`,
-  },
-  {
-    id: 'cdn',
-    name: 'Vanilla HTML / CDN',
-    code: `<!-- Drop into any index.html without Node.js -->
-<link rel="stylesheet" href="https://unpkg.com/@chitrank2050/ask-widget/dist/style.css" />
-
-<script type="module">
-  import { ChatWidget } from 'https://unpkg.com/@chitrank2050/ask-widget/dist/ask-widget.es.js';
-  import React from 'https://esm.sh/react@19';
-  import ReactDOM from 'https://esm.sh/react-dom@19/client';
-
-  const container = document.createElement('div');
-  document.body.appendChild(container);
-  ReactDOM.createRoot(container).render(
-    React.createElement(ChatWidget, {
-      title: 'Chitrank\\'s AI',
-      apiUrl: 'https://api.example.com'
-    })
-  );
-</script>`,
   },
 ];
 
@@ -135,7 +113,7 @@ export function IntegrationTabs() {
           Install in Under 60 Seconds
         </h2>
         <p className="mx-auto mt-3 max-w-2xl text-base text-[var(--text-secondary)]">
-          Native ESM and CommonJS exports. Drop it into your Next.js root layout or embed via CDN.
+          Native ESM and CommonJS exports. Drop it into your Next.js root layout with a bundler.
         </p>
       </div>
 

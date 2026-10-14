@@ -16,8 +16,9 @@ const FRAMEWORKS = [
     name: 'Next.js App Router',
     file: 'app/layout.tsx',
     code: `import { ChatWidget } from '@chitrank2050/ask-widget';
-import '@chitrank2050/ask-widget/style.css';
+import '@chitrank2050/ask-widget/styles.css';
 
+// Your backend must handle POST /api/v1/chat.
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
@@ -26,7 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ChatWidget
           title="Portfolio AI"
           placeholder="Ask about my projects & stack..."
-          apiUrl="/api/chat"
+          apiUrl="/api"
           theme="dark"
           position="bottom-right"
         />
@@ -40,8 +41,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     name: 'Vite / React 19',
     file: 'src/App.tsx',
     code: `import { ChatWidget } from '@chitrank2050/ask-widget';
-import '@chitrank2050/ask-widget/style.css';
+import '@chitrank2050/ask-widget/styles.css';
 
+// Your backend must handle POST /api/v1/chat.
 export function App() {
   return (
     <main className="portfolio">
@@ -50,7 +52,7 @@ export function App() {
         title="Ask Me"
         theme="dark"
         position="bottom-right"
-        apiUrl="https://api.myportfolio.dev/chat"
+        apiUrl="/api"
       />
     </main>
   );
@@ -60,51 +62,30 @@ export function App() {
     id: 'headless',
     name: 'Headless (useChat)',
     file: 'components/InlineTerminalChat.tsx',
-    code: `import { useChat } from '@chitrank2050/ask-widget';
+    code: `'use client';
 
-export function InlineTerminalChat() {
-  const { messages, input, setInput, sendMessage, isStreaming } = useChat({
-    apiUrl: '/api/chat',
+import { useChat, type ChatStreamHandler } from '@chitrank2050/ask-widget';
+
+const streamResponse: ChatStreamHandler = async (message, history) => {
+  const response = await fetch('/api/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message, history }),
   });
+  if (!response.ok) throw new Error('Chat request failed');
+  return response.text();
+};
 
+export function InlineChat() {
+  const { messages, inputValue, setInputValue, sendMessage, isStreaming } = useChat({ streamResponse });
   return (
-    <div className="terminal-chat">
-      <div className="messages">
-        {messages.map((m, i) => (
-          <p key={i} className={m.role}>
-            {m.content}
-          </p>
-        ))}
-      </div>
-      <form onSubmit={sendMessage}>
-        <input value={input} onChange={e => setInput(e.target.value)} />
-        <button disabled={isStreaming}>Send</button>
-      </form>
-    </div>
+    <form onSubmit={event => { event.preventDefault(); void sendMessage(inputValue); }}>
+      {messages.map(message => <p key={message.id}>{message.content}</p>)}
+      <input aria-label="Message" value={inputValue} onChange={event => setInputValue(event.target.value)} />
+      <button disabled={isStreaming}>Send</button>
+    </form>
   );
 }`,
-  },
-  {
-    id: 'cdn',
-    name: 'Vanilla HTML / CDN',
-    file: 'index.html',
-    code: `<!-- 1. Include Styles -->
-<link rel="stylesheet" href="https://esm.sh/@chitrank2050/ask-widget/dist/style.css" />
-
-<!-- 2. Import & Mount Module -->
-<script type="module">
-  import React from 'https://esm.sh/react@19';
-  import ReactDOM from 'https://esm.sh/react-dom@19/client';
-  import { ChatWidget } from 'https://esm.sh/@chitrank2050/ask-widget';
-
-  const root = ReactDOM.createRoot(document.getElementById('chat-root'));
-  root.render(React.createElement(ChatWidget, {
-    title: "Portfolio AI",
-    apiUrl: "/api/chat"
-  }));
-</script>
-
-<div id="chat-root"></div>`,
   },
 ];
 

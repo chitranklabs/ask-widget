@@ -5,17 +5,17 @@ const FEATURES = [
     tag: 'CORE_01',
     title: 'Real-Time SSE Streaming',
     description:
-      'Native Server-Sent Events (SSE) token streaming. Renders responses word-by-word with instant time-to-first-token latency, just like ChatGPT.',
-    metric: '<15ms',
-    metricLabel: 'TTFT LATENCY',
+      'Native Server-Sent Events (SSE) token streaming. Renders supported data frames incrementally from your configured backend.',
+    metric: 'SSE',
+    metricLabel: 'STREAM FORMAT',
   },
   {
     tag: 'ENGINEERING_02',
     title: 'Zero Runtime Dependencies',
     description:
-      'Pure React engineering. No heavy external markdown parsers, icon bundles, or utility libraries. Bundles down to under 14KB gzipped.',
-    metric: '14 KB',
-    metricLabel: 'BUNDLE FOOTPRINT',
+      'Pure React engineering. No heavy external markdown parsers, icon bundles, or utility libraries. React and React DOM remain peer dependencies.',
+    metric: 'React',
+    metricLabel: 'PEER DEPENDENCY',
   },
   {
     tag: 'AESTHETICS_03',

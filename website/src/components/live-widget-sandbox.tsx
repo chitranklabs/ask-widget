@@ -5,7 +5,7 @@ import { ChatWidget, ChatStreamHandler } from '@chitrank2050/ask-widget';
 
 const KNOWLEDGE_BASE: Record<string, string> = {
   about:
-    '**ask-widget** is a zero-dependency, streaming-first floating chat widget for developer portfolios and technical products. It is built with native React 18 & 19 compatibility and compiles down to under 14KB gzipped.',
+    '**ask-widget** is a zero-dependency, streaming-first floating chat widget for developer portfolios and technical products. It is built with native React 18 & 19 compatibility and keeps React and React DOM as peer dependencies.',
   streaming:
     'Streaming is powered by native **Server-Sent Events (SSE)**. It parses incoming chunks word-by-word with instant latency rendering, supporting OpenAI-compatible `/v1/chat` backends or custom headless async generators via `useSSEStream`.',
   installation:
@@ -267,7 +267,7 @@ export function App() {
                       : 'text-[var(--text-secondary)] hover:text-[var(--text)]'
                   }`}
                 >
-                  HTML CDN Embed
+                  React integration
                 </button>
               </div>
 

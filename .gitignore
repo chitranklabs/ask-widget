@@ -13,6 +13,7 @@ storybook-static/
 coverage/
 *.tsbuildinfo
 .next/
+.next-*/
 out/
 .vercel
 .turbo/

@@ -29,8 +29,8 @@ export function OpenSourceManifesto() {
             <span className="text-xs text-[var(--text-secondary)]">Tracking Scripts</span>
           </div>
           <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-4 text-center">
-            <span className="block font-mono text-xl font-bold text-[var(--text)]">&lt;14KB</span>
-            <span className="text-xs text-[var(--text-secondary)]">Gzipped Bundle</span>
+            <span className="block font-mono text-xl font-bold text-[var(--text)]">React</span>
+            <span className="text-xs text-[var(--text-secondary)]">Peer dependency</span>
           </div>
           <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-4 text-center">
             <span className="block font-mono text-xl font-bold text-[var(--accent)]">100%</span>

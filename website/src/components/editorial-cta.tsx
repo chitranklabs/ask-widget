@@ -48,7 +48,7 @@ export function EditorialCta() {
           </div>
 
           <p className="text-xs font-mono text-[var(--text-muted)] pt-2">
-            Tested on React 18, 19 and Next.js 14, 15, 16 App Router
+            React 18+ peer dependency • Includes a Next.js App Router example
           </p>
         </div>
       </div>

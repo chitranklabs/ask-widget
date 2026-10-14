@@ -1,3 +1,4 @@
+import { packageVersion } from '@/src/lib/seo';
 import Link from 'next/link';
 
 export function SiteFooter() {
@@ -13,7 +14,7 @@ export function SiteFooter() {
                 ASK_WIDGET
               </span>
               <span className="rounded border border-[var(--border-strong)] bg-[var(--surface-2)] px-1.5 py-0.5 font-mono text-[10px] text-[var(--text-muted)]">
-                v0.6.1
+                v{packageVersion}
               </span>
             </div>
             <p className="mt-3 max-w-sm text-sm text-[var(--text-muted)]">

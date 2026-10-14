@@ -14,9 +14,9 @@ import {
 import { monolineFontClassName } from '@/src/lib/fonts';
 import { fetchIdentity } from '@/src/lib/identity';
 import { socialImage } from '@/src/lib/metadata';
-import { siteUrl } from '@/src/lib/seo';
+import { siteUrl, isPreviewDeployment } from '@/src/lib/seo';
 
-import '@chitrank2050/ask-widget/style.css';
+import '@chitrank2050/ask-widget/styles.css';
 import './globals.css';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -25,7 +25,7 @@ export async function generateMetadata(): Promise<Metadata> {
     ? { name: identity.name, url: identity.websiteUrl }
     : { name: 'Chitrank Agnihotri', url: 'https://chitrankagnihotri.com' };
 
-  const title = 'ask-widget - Lightweight Floating Chat Widget with SSE Streaming';
+  const title = 'ask-widget | Streaming React Chat Widget';
   const description =
     'Drop-in floating chat widget for developer portfolios. Server-Sent Events (SSE) token streaming, neutral zinc dark/light themes, and zero runtime dependencies.';
 
@@ -44,7 +44,7 @@ export async function generateMetadata(): Promise<Metadata> {
       'sse streaming',
       'server-sent events',
       'streaming ai chat',
-      'zero dependency',
+      'react library',
       'monochrome ui',
       'zinc theme',
       'developer portfolio',
@@ -80,10 +80,10 @@ export async function generateMetadata(): Promise<Metadata> {
       statusBarStyle: 'black-translucent',
     },
     robots: {
-      index: true,
+      index: !isPreviewDeployment,
       follow: true,
       googleBot: {
-        index: true,
+        index: !isPreviewDeployment,
         follow: true,
         'max-video-preview': -1,
         'max-image-preview': 'large',
