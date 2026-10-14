@@ -146,20 +146,24 @@ jobs:
           HAS_DEPS: ${{ needs.changes.outputs.deps }}
           HAS_WEBSITE: ${{ needs.changes.outputs.website }}
           HAS_DOCS: ${{ needs.changes.outputs.docs }}
+          HAS_LINT: ${{ needs.changes.outputs.lint }}
         run: |
           echo "::group::Starting Parallel Checks"
           mkdir -p .ci-status
 
-          if [ "$HAS_SRC" == "true" ] || [ "$HAS_DEPS" == "true" ] || [ "$HAS_WEBSITE" == "true" ]; then
+          if [ "$HAS_SRC" == "true" ] || [ "$HAS_DEPS" == "true" ] || [ "$HAS_WEBSITE" == "true" ] || [ "$HAS_LINT" == "true" ]; then
             ((pnpm run build && pnpm run test:seo) > .ci-status/build.log 2>&1 || echo "1" > .ci-status/build.fail) &
           fi
 
-          if [ "$HAS_DOCS" == "true" ] || [ "$HAS_SRC" == "true" ] || [ "$HAS_DEPS" == "true" ]; then
+          if [ "$HAS_DOCS" == "true" ] || [ "$HAS_SRC" == "true" ] || [ "$HAS_DEPS" == "true" ] || [ "$HAS_LINT" == "true" ]; then
             (pnpm run docs:build > .ci-status/docs.log 2>&1 || echo "1" > .ci-status/docs.fail) &
           fi
 
           if [ "$HAS_SRC" == "true" ] || [ "$HAS_DEPS" == "true" ]; then
             (pnpm run test:coverage > .ci-status/test.log 2>&1 || echo "1" > .ci-status/test.fail) &
+          fi
+
+          if [ "$HAS_SRC" == "true" ] || [ "$HAS_DEPS" == "true" ] || [ "$HAS_LINT" == "true" ]; then
             (pnpm run typecheck > .ci-status/typecheck.log 2>&1 || echo "1" > .ci-status/typecheck.fail) &
           fi
 
@@ -196,7 +200,7 @@ jobs:
           exit $EXIT_CODE
 
       - name: Upload coverage to Codecov 📊
-        if: needs.changes.outputs.src == 'true'
+        if: needs.changes.outputs.src == 'true' || needs.changes.outputs.deps == 'true'
         uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
         with:
           token: ${{ secrets.CODECOV_TOKEN }}

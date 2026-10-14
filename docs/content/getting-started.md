@@ -18,6 +18,14 @@ pnpm add @chitrank2050/ask-widget
 yarn add @chitrank2050/ask-widget
 ```
 
+## Registry choice
+
+Use the npm distribution for the styled React widget; it includes the compiled
+stylesheet and its `styles.css` and legacy `style.css` aliases. The JSR distribution
+publishes TypeScript source and hooks. JSR does not support CSS module entry points,
+so the npm stylesheet aliases are not available there. Use npm when following the
+styled widget examples below.
+
 ## Basic Usage
 
 To use the widget, render it at the root of your application (or any top-level layout).

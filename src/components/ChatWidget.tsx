@@ -79,6 +79,23 @@ export default function ChatWidget({
     persistenceKey,
   });
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const onEscape = (event: KeyboardEvent) => {
+      // A disabled submit control loses focus to body while a response is pending.
+      if (
+        event.key === 'Escape' &&
+        !event.defaultPrevented &&
+        document.activeElement === document.body
+      ) {
+        cancelResponse();
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('keydown', onEscape);
+    return () => document.removeEventListener('keydown', onEscape);
+  }, [isOpen, cancelResponse]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     sendMessage(inputValue);

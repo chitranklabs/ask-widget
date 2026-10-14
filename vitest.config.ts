@@ -17,7 +17,7 @@ export default defineConfig({
       provider: 'v8',
       include: ['src/**'],
       exclude: ['src/env.d.ts', 'src/types/**', 'src/assets/**'],
-      reporter: ['text', 'json', 'html'],
+      reporter: ['text', 'json', 'html', 'lcov'],
     },
   },
 });
