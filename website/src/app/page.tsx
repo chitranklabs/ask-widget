@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 
+import { ApiReference } from '@/src/components/api-reference';
 import { EditorialCta } from '@/src/components/editorial-cta';
 import { HomeHero } from '@/src/components/home-hero';
 import { IntegrationStudio } from '@/src/components/integration-studio';
@@ -77,6 +78,8 @@ export default function HomePage() {
 
       {/* 6. Integration Studio (30-Second Quickstart with Framework Switchers) */}
       <IntegrationStudio />
+
+      <ApiReference />
 
       {/* 7. FAQ Section */}
       <section id="faq" className="mx-auto max-w-4xl px-4 py-16 sm:px-6 lg:py-20">

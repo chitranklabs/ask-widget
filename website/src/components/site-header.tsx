@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { Button } from '@chitrank2050/monoline-ui';
 import { useTheme } from '@/src/components/theme-provider';
 
 export function SiteHeader() {
@@ -27,7 +28,10 @@ export function SiteHeader() {
         </div>
 
         {/* Center Navigation */}
-        <nav className="hidden items-center gap-6 text-sm font-medium text-[var(--text-secondary)] md:flex">
+        <nav
+          aria-label="Main navigation"
+          className="hidden items-center gap-6 text-sm font-medium text-[var(--text-secondary)] md:flex"
+        >
           <Link href="/#demo" className="transition-colors hover:text-[var(--text)]">
             Playground
           </Link>
@@ -50,6 +54,9 @@ export function SiteHeader() {
 
         {/* Right Actions */}
         <div className="flex items-center gap-3">
+          <Button asChild variant="secondary" size="sm">
+            <a href="https://chitranklabs.github.io/ask-widget/">Docs</a>
+          </Button>
           <a
             href="https://www.npmjs.com/package/@chitrank2050/ask-widget"
             target="_blank"
@@ -72,10 +79,12 @@ export function SiteHeader() {
           </a>
 
           {/* Theme Switcher Button */}
-          <button
+          <Button
+            variant="secondary"
+            size="sm"
             type="button"
             onClick={toggleTheme}
-            className="btn-tactile flex h-8 w-8 items-center justify-center rounded-md border border-[var(--border)] bg-[var(--surface-2)] text-[var(--text-secondary)] transition hover:border-[var(--border-strong)] hover:text-[var(--text)]"
+            className="btn-tactile flex h-9 w-9 p-0 items-center justify-center rounded-md border border-[var(--border)] bg-[var(--surface-2)] text-[var(--text-secondary)] transition hover:border-[var(--border-strong)] hover:text-[var(--text)]"
             aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
           >
             {theme === 'dark' ? (
@@ -97,7 +106,7 @@ export function SiteHeader() {
                 />
               </svg>
             )}
-          </button>
+          </Button>
         </div>
       </div>
     </header>

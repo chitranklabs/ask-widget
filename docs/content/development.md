@@ -44,3 +44,9 @@ pnpm docs:build
 Do not commit `docs/dist`, package `dist` or website `.next` output.
 The website and documentation have separate deployment targets; docs output is
 never mounted into the Next.js application.
+
+## Shared site theme
+
+The website and documentation load `assets/theme.css` for their light and dark
+color tokens. Edit this file to keep both sites consistent. Website layout styles
+remain in `website/src/app/globals.css`; the Docs layout is managed by Monoline Docs.

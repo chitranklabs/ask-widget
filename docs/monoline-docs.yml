@@ -7,6 +7,7 @@ cleanUrls: true
 contentDirectory: ./content
 assetsDirectory: ../assets
 outDirectory: ./dist
+stylesheet: /assets/theme.css
 seo:
   titleTemplate: '%s | ask-widget docs'
   socialImage: /assets/banner.png
