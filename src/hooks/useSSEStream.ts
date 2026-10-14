@@ -13,7 +13,8 @@ export interface SSEStreamOptions {
 
   /**
    * Optional Bearer token for API authentication.
-   * @example process.env.NEXT_PUBLIC_CHAT_API_TOKEN
+   * Browser-visible: never pass a private provider key.
+   * @example session.accessToken
    */
   apiToken?: string;
 
@@ -76,7 +77,6 @@ const defaultBuildBody = (message: string, history: ChatMessage[]) => ({
  * ```tsx
  * const { streamResponse } = useSSEStream({
  *   apiUrl: 'https://my-api.example.com',
- *   apiToken: process.env.NEXT_PUBLIC_API_TOKEN,
  * })
  *
  * return <ChatWidget streamResponse={streamResponse} />

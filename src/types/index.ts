@@ -88,9 +88,11 @@ export interface ChatWidgetProps {
 
   /**
    * Bearer token for API authentication.
-   * Never commit this - pass via environment variable.
+   * Browser-visible token. Use only a short-lived token scoped to your backend.
+   * Keep private provider credentials on the server; frontend environment
+   * variables do not conceal secrets.
    *
-   * @example process.env.CHAT_API_TOKEN
+   * @example session.accessToken
    */
   apiToken?: string;
 

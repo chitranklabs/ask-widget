@@ -25,7 +25,6 @@ import ChatPanel from './ChatPanel';
  * ```tsx
  * <ChatWidget
  *   apiUrl="https://your-api.example.com"
- *   apiToken={process.env.NEXT_PUBLIC_API_TOKEN}
  *   title="Ask Anything"
  * />
  * ```

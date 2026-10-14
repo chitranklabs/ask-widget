@@ -1,6 +1,6 @@
 {
   "name": "@chitrank2050/ask-widget",
-  "version": "0.1.0",
+  "version": "0.6.1",
   "description": "A lightweight chat widget for developer portfolios. Drop-in floating chat with SSE streaming, dark/light themes, and configurable positioning.",
   "exports": "./src/index.ts",
   "publish": {

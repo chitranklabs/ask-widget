@@ -7,7 +7,7 @@
 Manages chat state, message history, and the streaming lifecycle.
 
 ```tsx
-import { useChat } from 'ask-widget';
+import { useChat } from '@chitrank2050/ask-widget';
 
 const {
   messages,
@@ -28,14 +28,13 @@ const {
 
 ## `useSSEStream`
 
-Handles the SSE connection, fetch headers, and token parsing from any API.
+Handles the SSE connection, fetch headers, and token parsing from compatible SSE APIs.
 
 ```tsx
-import { useSSEStream } from 'ask-widget'
+import { useSSEStream } from '@chitrank2050/ask-widget'
 
 const { streamResponse } = useSSEStream({
   apiUrl: "https://my-api.com",
-  apiToken: "...",
   path: "/v1/chat",
   // also takes customizable body builders and chunk extractors
 })
@@ -48,9 +47,11 @@ const { streamResponse } = useSSEStream({
 A simple hook to handle message persistence to `localStorage`.
 
 ```tsx
-import { useSession } from 'ask-widget';
+import { useSession } from '@chitrank2050/ask-widget';
 
-const { messages, saveMessages, clearSession } = useSession({
-  key: 'my_chat_session',
-});
+const { messages, setMessages, clearSession } = useSession('my_chat_session');
 ```
+
+The hooks must run inside a React component or custom hook. `useSession` takes
+a persistence key and optional initial messages; it does not accept an options
+object. Treat persisted chat history as browser-local data, not secure storage.

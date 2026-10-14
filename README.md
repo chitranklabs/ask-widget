@@ -87,20 +87,19 @@ pnpm add @chitrank2050/ask-widget
 
 ```tsx
 import { ChatWidget } from '@chitrank2050/ask-widget';
-import '@chitrank2050/ask-widget/style.css'; // Optimized CSS Layer styles
+import '@chitrank2050/ask-widget/styles.css';
 
 export default function App() {
-  return (
-    <ChatWidget
-      apiUrl="https://your-api.example.com"
-      apiToken={import.meta.env.VITE_CHAT_API_TOKEN}
-      title="Ask AI"
-    />
-  );
+  return <ChatWidget apiUrl="https://your-api.example.com" title="Ask AI" />;
 }
 ```
 
 ---
+
+`apiUrl` should point to your backend. Keep private provider keys on the server;
+`apiToken` and frontend environment variables are visible in the browser. See
+the [authentication guide](docs/getting-started.md#authentication). The
+`style.css` alias remains available for existing consumers.
 
 ## 🛠️ Development
 
