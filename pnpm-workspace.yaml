@@ -23,3 +23,9 @@ allowBuilds:
   '@swc/core': false
 minimumReleaseAgeExclude:
   - '@chitrank2050/monoline-docs@0.3.0'
+
+# Patched transitive versions until Markdown tooling updates its dependency ranges.
+overrides:
+  'markdownlint-cli>js-yaml': '^5.4.1'
+  'markdownlint-cli>smol-toml': '^1.9.0'
+  'micromark-extension-math>katex': '^0.18.2'
