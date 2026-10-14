@@ -7,7 +7,7 @@
 # workflows, bypassing the GITHUB_TOKEN restrictions.
 #
 # Usage:
-#   uses: ./.github/actions/setup-bot
+#   uses: $/.github/actions/setup-bot
 #   with:
 #     client-id: ${{ secrets.CHITRANK_BOT_CLIENT_ID }}
 #     private-key: ${{ secrets.CHITRANK_BOT_PRIVATE_KEY }}

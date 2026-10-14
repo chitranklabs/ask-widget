@@ -71,7 +71,17 @@ export type ChatStreamResult =
  * Return an async iterable for true token streaming, or a string/promise
  * while the backend integration is still being prepared.
  */
-export type ChatStreamHandler = (message: string, history: ChatMessage[]) => ChatStreamResult;
+export interface ChatStreamContext {
+  /** Abort network work when the response is cancelled or the widget unmounts. */
+  signal: AbortSignal;
+}
+
+/** History includes the submitted user message exactly once. */
+export type ChatStreamHandler = (
+  message: string,
+  history: ChatMessage[],
+  context?: ChatStreamContext,
+) => ChatStreamResult;
 
 // ── Props ────────────────────────────────────────────────────────────────────
 

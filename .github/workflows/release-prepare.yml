@@ -16,13 +16,19 @@ on:
         description: 'Manual tag to release (e.g. v0.1.0). Leave empty to use git-hygiene recommendation.'
         required: false
 
-permissions: read-all
+permissions:
+  contents: read
+
+concurrency:
+  group: release-prepare
+  cancel-in-progress: false
 
 jobs:
   prepare:
     name: Prepare Release PR 🚀
     if: github.actor == github.repository_owner || github.actor == 'chitrank2050'
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: read
     env:
@@ -53,7 +59,7 @@ jobs:
 
       - name: Create Bot Token 🤖🔑
         id: generate_token
-        uses: ./.github/actions/setup-bot
+        uses: $/.github/actions/setup-bot
         with:
           client-id: ${{ secrets.CHITRANK_BOT_CLIENT_ID }}
           private-key: ${{ secrets.CHITRANK_BOT_PRIVATE_KEY }}
@@ -75,10 +81,10 @@ jobs:
           RAW_INPUT="${MANUAL_TAG}"
 
           if [ -n "$RAW_INPUT" ]; then
-            # Robust extraction: find the first version-like string (X.Y.Z) in the input
-            NEW_VERSION=$(echo "$RAW_INPUT" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+(-.*)?' | head -1)
+            # Reject malformed input instead of extracting a plausible substring.
+            NEW_VERSION="${RAW_INPUT#v}"
 
-            if [[ ! "$NEW_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-.*)?$ ]]; then
+            if [[ ! "$NEW_VERSION" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-[0-9A-Za-z]+([.-][0-9A-Za-z]+)*)?$ ]]; then
               echo "❌ Error: Could not extract valid version from '$RAW_INPUT'"
               exit 1
             fi
@@ -105,6 +111,7 @@ jobs:
         run: |
           echo "Bumping package.json to $CLEAN_VERSION"
           jq ".version = \"$CLEAN_VERSION\"" package.json > package.json.tmp && mv package.json.tmp package.json
+          jq ".version = \"$CLEAN_VERSION\"" jsr.json > jsr.json.tmp && mv jsr.json.tmp jsr.json
 
       - name: Update CHANGELOG.md 📝
         uses: orhun/git-cliff-action@f50e11560dce63f7c33227798f90b924471a88b5 # v4.8.0
@@ -121,20 +128,20 @@ jobs:
         with:
           token: ${{ steps.generate_token.outputs.token }}
           commit-message: 'chore(release): bump version to ${{ steps.vars.outputs.tag_name }}'
-          title: 'chore(release): 🚀 ${{ steps.vars.outputs.tag_name }}'
+          title: 'chore(release): ask-widget ${{ steps.vars.outputs.tag_name }}'
           body: |
-            <!-- autofill-start -->
-            - chore(release): update CHANGELOG.md
-            - chore(release): bump version to ${{ steps.vars.outputs.tag_name }}
-            - chore(release): bump recommendation from git-hygiene (${{ steps.bump.outputs.releaseType }})
-            <!-- autofill-end -->
+            Release `@chitrank2050/ask-widget` ${{ steps.vars.outputs.tag_name }}.
+
+            Updates the npm and JSR versions and generated changelog. Merging prepares
+            the version tag, publishes each registry independently and creates the GitHub release.
           labels: |
             chore
             release
-          branch: 'chore/release-${{ steps.vars.outputs.tag_name }}'
+          branch: 'release/${{ steps.vars.outputs.tag_name }}'
           base: main
           delete-branch: true
           assignees: chitrank2050
           add-paths: |
             CHANGELOG.md
             package.json
+            jsr.json

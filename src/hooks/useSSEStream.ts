@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import type { ChatMessage } from '../types';
+import type { ChatMessage, ChatStreamContext } from '../types';
 
 /**
  * SSE stream configuration options.
@@ -28,7 +28,7 @@ export interface SSEStreamOptions {
    * Custom function to build the request body from the current message and history.
    * Override this to match your backend's expected payload shape.
    *
-   * @default (message, history) => ({ messages: [...history, { role: 'user', content: message }] })
+   * History includes the submitted user message; the default body avoids adding it twice.
    */
   buildBody?: (message: string, history: ChatMessage[]) => unknown;
 
@@ -48,6 +48,7 @@ export interface UseSSEStreamReturn {
   streamResponse: (
     message: string,
     history: ChatMessage[],
+    context?: ChatStreamContext,
   ) => AsyncGenerator<string, void, unknown>;
 }
 
@@ -55,18 +56,21 @@ const defaultExtractChunk = (data: unknown): string | undefined => {
   if (typeof data !== 'object' || data === null) return undefined;
   const choices = (data as Record<string, unknown>).choices;
   if (!Array.isArray(choices) || choices.length === 0) return undefined;
-  const delta = (choices[0] as Record<string, unknown>).delta;
+  const first = choices[0];
+  if (typeof first !== 'object' || first === null) return undefined;
+  const delta = (first as Record<string, unknown>).delta;
   if (typeof delta !== 'object' || delta === null) return undefined;
   const content = (delta as Record<string, unknown>).content;
   return typeof content === 'string' ? content : undefined;
 };
 
-const defaultBuildBody = (message: string, history: ChatMessage[]) => ({
-  messages: [
-    ...history.map(m => ({ role: m.role, content: m.content })),
-    { role: 'user' as const, content: message },
-  ],
-});
+const defaultBuildBody = (message: string, history: ChatMessage[]) => {
+  const last = history.at(-1);
+  const messages = history.map(item => ({ role: item.role, content: item.content }));
+  if (last?.role !== 'user' || last.content !== message)
+    messages.push({ role: 'user', content: message });
+  return { messages, stream: true };
+};
 
 /**
  * Hook providing a generic SSE-backed response adapter.
@@ -90,9 +94,10 @@ export function useSSEStream({
   extractChunk = defaultExtractChunk,
 }: SSEStreamOptions): UseSSEStreamReturn {
   const streamResponse = useCallback(
-    async function* (message: string, history: ChatMessage[]) {
+    async function* (message: string, history: ChatMessage[], context?: ChatStreamContext) {
       const response = await fetch(`${apiUrl}${path}`, {
         method: 'POST',
+        signal: context?.signal,
         headers: {
           'Content-Type': 'application/json',
           ...(apiToken ? { Authorization: `Bearer ${apiToken}` } : {}),
@@ -102,9 +107,14 @@ export function useSSEStream({
 
       if (!response.ok) {
         const error = await response.json().catch(() => ({ detail: 'Unknown network error' }));
-        throw new Error(
-          ((error as Record<string, unknown>).detail as string) || 'API request failed',
-        );
+        const detail =
+          typeof error === 'object' &&
+          error !== null &&
+          'detail' in error &&
+          typeof error.detail === 'string'
+            ? error.detail
+            : 'API request failed';
+        throw new Error(detail);
       }
 
       const reader = response.body?.getReader();
@@ -112,33 +122,68 @@ export function useSSEStream({
 
       const decoder = new TextDecoder();
       let buffer = '';
+      let dataLines: string[] = [];
+      let ended = false;
+      let completed = false;
+      const cancel = () => {
+        void reader.cancel().catch(() => {});
+      };
+      context?.signal.addEventListener('abort', cancel, { once: true });
 
+      const event = (): string | undefined => {
+        if (!dataLines.length) return;
+        const data = dataLines.join('\n');
+        dataLines = [];
+        if (data === '[DONE]') {
+          ended = true;
+          return;
+        }
+        let parsed: unknown;
+        try {
+          parsed = JSON.parse(data);
+        } catch {
+          console.warn('[useSSEStream] Invalid JSON data frame');
+          return;
+        }
+        return extractChunk(parsed);
+      };
+      const line = (value: string): string | undefined => {
+        if (!value) return event();
+        if (value.startsWith('data:')) dataLines.push(value.slice(5).replace(/^ /, ''));
+      };
+      function* lines(final = false): Generator<string> {
+        let match: RegExpExecArray | null;
+        while ((match = /[\r\n]/.exec(buffer))) {
+          const index = match.index;
+          if (!final && buffer[index] === '\r' && index === buffer.length - 1) break;
+          const value = buffer.slice(0, index);
+          const count = buffer[index] === '\r' && buffer[index + 1] === '\n' ? 2 : 1;
+          buffer = buffer.slice(index + count);
+          const content = line(value);
+          if (content) yield content;
+          if (ended) return;
+        }
+      }
       try {
+        if (context?.signal.aborted) return;
         while (true) {
           const { done, value } = await reader.read();
-          if (done) break;
-
-          buffer += decoder.decode(value, { stream: true });
-          const lines = buffer.split('\n');
-          buffer = lines.pop() || '';
-
-          for (const line of lines) {
-            const trimmed = line.trim();
-            if (!trimmed || !trimmed.startsWith('data: ')) continue;
-
-            const data = trimmed.slice(6);
-            if (data === '[DONE]') return;
-
-            try {
-              const parsed: unknown = JSON.parse(data);
-              const content = extractChunk(parsed);
-              if (content) yield content;
-            } catch (e) {
-              console.warn('[useSSEStream] Failed to parse SSE data:', e);
-            }
+          if (context?.signal.aborted) return;
+          buffer += done ? decoder.decode() : decoder.decode(value, { stream: true });
+          yield* lines(done);
+          if (ended) return;
+          if (done) {
+            // Be tolerant of adapters that omit the final newline or blank separator.
+            if (buffer) line(buffer);
+            const content = event();
+            if (content) yield content;
+            completed = true;
+            return;
           }
         }
       } finally {
+        context?.signal.removeEventListener('abort', cancel);
+        if (!completed) await reader.cancel().catch(() => {});
         reader.releaseLock();
       }
     },

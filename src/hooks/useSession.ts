@@ -1,9 +1,6 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import type { ChatMessage } from '../types';
 
-/**
- * Return type of the useSession hook.
- */
 export interface UseSessionReturn {
   messages: ChatMessage[];
   addMessage: (message: ChatMessage) => void;
@@ -12,63 +9,94 @@ export interface UseSessionReturn {
   setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
 }
 
-/**
- * Hook providing persistence for chat history.
- * Helps with Phase 3 - Session Persistence.
- */
+function restoreMessages(value: unknown): ChatMessage[] {
+  if (!Array.isArray(value)) throw new Error('Invalid session');
+  return value.map(item => {
+    if (
+      !item ||
+      typeof item !== 'object' ||
+      typeof item.id !== 'string' ||
+      !['user', 'assistant'].includes(item.role) ||
+      typeof item.content !== 'string' ||
+      typeof item.timestamp !== 'string' ||
+      (item.cached !== undefined && typeof item.cached !== 'boolean')
+    ) {
+      throw new Error('Invalid session message');
+    }
+    const timestamp = new Date(item.timestamp);
+    if (!Number.isFinite(timestamp.getTime())) throw new Error('Invalid session timestamp');
+    return { id: item.id, role: item.role, content: item.content, timestamp, cached: item.cached };
+  });
+}
+
+/** Browser persistence with SSR-safe initialization and validated stored messages. */
 export function useSession(
   id = 'ask-widget-session',
   initialMessages: ChatMessage[] = [],
 ): UseSessionReturn {
-  const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
-
-  // Load from localStorage on mount (Client-only)
+  const defaults = useRef(initialMessages);
   useEffect(() => {
+    defaults.current = initialMessages;
+  }, [initialMessages]);
+  const [session, setSession] = useState({ id, messages: initialMessages, loaded: false });
+
+  useEffect(() => {
+    let messages = defaults.current;
     try {
       const stored = localStorage.getItem(`widget-session-${id}`);
-      if (stored) {
-        const parsed = JSON.parse(stored) as Array<{ timestamp: string | Date }>;
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setMessages(
-          parsed.map(m => ({
-            ...m,
-            timestamp: new Date(m.timestamp),
-          })) as ChatMessage[],
-        );
-      }
-    } catch (e) {
-      console.warn('Failed to load chat session', e);
+      if (stored) messages = restoreMessages(JSON.parse(stored));
+    } catch {
+      console.warn('Unable to restore chat session');
     }
+    setSession({ id, messages, loaded: true });
   }, [id]);
 
-  // Sync to localStorage on message changes
   useEffect(() => {
+    if (!session.loaded || session.id !== id) return;
     try {
-      if (messages.length > 0) {
-        localStorage.setItem(`widget-session-${id}`, JSON.stringify(messages));
-      } else {
-        localStorage.removeItem(`widget-session-${id}`);
-      }
-    } catch (e) {
-      console.warn('Failed to save chat session', e);
+      if (session.messages.length)
+        localStorage.setItem(`widget-session-${id}`, JSON.stringify(session.messages));
+      else localStorage.removeItem(`widget-session-${id}`);
+    } catch {
+      console.warn('Unable to save chat session');
     }
-  }, [messages, id]);
+  }, [session, id]);
 
-  const addMessage = useCallback((message: ChatMessage) => {
-    setMessages(current => [...current, message]);
-  }, []);
-
-  const updateMessage = useCallback((id: string, update: Partial<ChatMessage>) => {
-    setMessages(current => current.map(m => (m.id === id ? { ...m, ...update } : m)));
-  }, []);
-
+  const setMessages: UseSessionReturn['setMessages'] = useCallback(
+    update => {
+      setSession(current => {
+        const messages = current.id === id ? current.messages : defaults.current;
+        return {
+          id,
+          loaded: current.id === id && current.loaded,
+          messages: typeof update === 'function' ? update(messages) : update,
+        };
+      });
+    },
+    [id],
+  );
+  const addMessage = useCallback(
+    (message: ChatMessage) => setMessages(current => [...current, message]),
+    [setMessages],
+  );
+  const updateMessage = useCallback(
+    (id: string, update: Partial<ChatMessage>) =>
+      setMessages(current =>
+        current.map(message => (message.id === id ? { ...message, ...update } : message)),
+      ),
+    [setMessages],
+  );
   const clearSession = useCallback(() => {
-    setMessages(initialMessages);
-    localStorage.removeItem(`widget-session-${id}`);
-  }, [id, initialMessages]);
+    setMessages(defaults.current);
+    try {
+      localStorage.removeItem(`widget-session-${id}`);
+    } catch {
+      console.warn('Unable to clear chat session');
+    }
+  }, [id, setMessages]);
 
   return {
-    messages,
+    messages: session.id === id ? session.messages : initialMessages,
     addMessage,
     updateMessage,
     clearSession,

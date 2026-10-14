@@ -58,6 +58,11 @@ export default function ChatPanel({
   labels,
 }: ChatPanelProps) {
   const feedRef = useRef<HTMLDivElement | null>(null);
+  const panelRef = useRef<HTMLElement | null>(null);
+  const followLatest = useRef(true);
+  useEffect(() => {
+    panelRef.current?.querySelector('input')?.focus();
+  }, []);
 
   // Auto-scroll to bottom on new messages or streaming updates
   useEffect(() => {
@@ -65,11 +70,14 @@ export default function ChatPanel({
 
     const nextFrame = window.requestAnimationFrame(() => {
       const node = feedRef.current;
-      if (!node) return;
+      if (!node || !followLatest.current) return;
 
       node.scrollTo({
         top: node.scrollHeight,
-        behavior: 'smooth',
+        behavior:
+          isStreaming || window.matchMedia('(prefers-reduced-motion: reduce)').matches
+            ? 'auto'
+            : 'smooth',
       });
     });
 
@@ -79,7 +87,17 @@ export default function ChatPanel({
   }, [messages, isStreaming]);
 
   return (
-    <section className="chat-widget__panel" aria-label={title}>
+    <section
+      ref={panelRef}
+      className="chat-widget__panel"
+      aria-label={title}
+      onKeyDown={event => {
+        if (event.key === 'Escape') {
+          event.stopPropagation();
+          onCollapse();
+        }
+      }}
+    >
       {/* ── Header ────────────────────────────────────────────────────── */}
       <header className="chat-widget__header">
         <div className="chat-widget__title-wrap">
@@ -94,7 +112,6 @@ export default function ChatPanel({
             type="button"
             className="chat-widget__header-button"
             onClick={onReset}
-            disabled={isStreaming}
             title={labels?.resetAction || 'Reset conversation'}
             aria-label={labels?.resetAction || 'Reset conversation'}
           >
@@ -104,7 +121,6 @@ export default function ChatPanel({
             type="button"
             className="chat-widget__header-button"
             onClick={onCollapse}
-            disabled={isStreaming}
             title={labels?.collapseAction || 'Close panel'}
             aria-label={labels?.collapseAction || 'Close panel'}
           >
@@ -114,7 +130,16 @@ export default function ChatPanel({
       </header>
 
       {/* ── Message feed ──────────────────────────────────────────────── */}
-      <div className="chat-widget__feed" ref={feedRef} role="log" aria-live="polite">
+      <div
+        className="chat-widget__feed"
+        ref={feedRef}
+        role="log"
+        aria-live="polite"
+        onScroll={event => {
+          const node = event.currentTarget;
+          followLatest.current = node.scrollHeight - node.scrollTop - node.clientHeight < 48;
+        }}
+      >
         <div className="chat-widget__system-chip">
           {labels?.systemStatus || 'SYSTEM.LINK_ESTABLISHED'}
         </div>

@@ -27,8 +27,9 @@ Set a distinct `persistenceKey` per conversation. Browser storage may be disable
 or unavailable in private browsing. Saved history is local to the browser and
 origin; it is not server synchronization or secure storage.
 
-## The close/reset button is unavailable while streaming
+## A custom response continues after closing the panel
 
-The current widget disables these actions during a response. Cancellation is
-not exposed by the current adapter. A custom response handler can own its request
-lifecycle; do not rely on collapsing the panel to abort a network request.
+Close, Escape and reset cancel the active chat request and ignore late results.
+Pass the handler's optional `context.signal` to fetch to stop its network work too.
+See [Cancellation](backend.md#cancel-a-response). Existing handlers that ignore the
+signal cannot have their remote work forcibly stopped by the widget.

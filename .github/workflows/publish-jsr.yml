@@ -14,8 +14,8 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version to publish (leave empty to use package.json)'
-        required: false
+        description: 'Existing immutable release tag to recover (for example v0.7.0)'
+        required: true
         default: ''
 
 permissions:
@@ -26,10 +26,15 @@ env:
   NODE_VERSION: 24
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
+concurrency:
+  group: jsr-recovery
+  cancel-in-progress: false
+
 jobs:
   publish:
     name: Publish to JSR 🚀
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Harden Runner 🛡️
         uses: step-security/harden-runner@b09bb98e06d4d774595224525879c09bc6e98c40 # v2.20.1
@@ -50,37 +55,26 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: Install dependencies 📥
-        run: pnpm install --frozen-lockfile --prefer-offline
-
       - name: Setup Deno 🦕
         uses: denoland/setup-deno@22d081ff2d3a40755e97629de92e3bcbfa7cf2ed # v2.0.5
         with:
           deno-version: v2.x
 
-      - name: Sync Version 🔄
+      - name: Verify release source
         env:
-          INPUT_VERSION: ${{ github.event.inputs.version }}
+          INPUT_VERSION: ${{ inputs.version }}
         run: |
-          # Robust extraction: find the first version-like string (X.Y.Z)
-          RAW_INPUT="$INPUT_VERSION"
-          if [ -z "$RAW_INPUT" ]; then
-            RAW_INPUT=$(jq -r .version package.json)
-          fi
+          TAG="v${INPUT_VERSION#v}"
+          if [[ ! "$TAG" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-[0-9A-Za-z]+([.-][0-9A-Za-z]+)*)?$ ]]; then exit 1; fi
+          git checkout --detach "$TAG"
+          test "$(jq -r .version package.json)" = "${TAG#v}"
+          test "$(jq -r .version jsr.json)" = "${TAG#v}"
 
-          # Extract only the semantic version part
-          VERSION=$(echo "$RAW_INPUT" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+(-.*)?' | head -1)
-
-          if [ -z "$VERSION" ]; then
-            echo "❌ Error: Could not extract valid version from: $RAW_INPUT"
-            exit 1
-          fi
-
-          echo "Syncing JSR version to: $VERSION"
-          jq ".version = \"$VERSION\"" jsr.json > jsr.json.tmp && mv jsr.json.tmp jsr.json
+      - name: Install dependencies 📥
+        run: pnpm install --frozen-lockfile --prefer-offline
 
       - name: Build Library 🏗️
         run: pnpm run build:lib
 
       - name: Publish 📦
-        run: npx jsr publish --allow-dirty
+        run: deno publish

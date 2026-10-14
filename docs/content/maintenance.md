@@ -1,42 +1,59 @@
 ---
 title: Maintenance and releases
-description: Maintainer workflow for versioning, publishing and repository checks.
+description: Prepare npm and JSR releases, publish verified tags and recover one failed destination.
 ---
 
-This document describes the technical process for maintaining and releasing `@chitrank2050/ask-widget`.
+## Prepare a release
 
-## Release Workflow
+Use Conventional Commits; Lefthook and git-hygiene validate commit messages.
+Run **Release 1 - Prepare PR** to calculate the next version and open a
+`release/v<version>` branch. The PR updates `package.json`, `jsr.json` and the
+generated `CHANGELOG.md` together.
 
-We use **[git-hygiene](https://github.com/chitranklabs/git-hygiene)** to automate versioning, changelog generation, and npm releases.
+## Finalize
 
-### 1. Development (The "Commit")
+Merging a labeled release PR starts **Release 2 - Finalize Tag**. The workflow
+verifies matching versions, runs library tests and types, builds the package and
+checks its packed contents before creating the tag. A conflicting existing tag
+fails explicitly; it is never overwritten.
 
-Every commit must follow the [Conventional Commits](https://www.conventionalcommits.org/) standard. This is enforced locally via **Lefthook** and in CI. The commit message determines the next version bump (major, minor, or patch).
+npm, JSR and the GitHub release run independently against the verified source
+commit. npm publishes only the root library, with provenance. JSR publishes its
+source package using OIDC. GitHub release notes come from git-cliff for that tag.
+Documentation deployment remains a separate main-branch workflow.
 
-### 2. Phase 1: Prepare (Release PR)
+## Recover a failed destination
 
-To start a release, manually trigger the **`Release 1 - Prepare PR`** workflow from the GitHub Actions tab.
+Dispatch **Release 2 - Finalize Tag** with the exact version and a `target`:
+`npm`, `jsr`, `github` or `all`. Manual recovery requires an existing tag and selects its immutable source
+commit. If tag creation failed, rerun the original merged-PR build/tag job rather
+than creating a recovery tag from the current main branch. Published npm versions and existing GitHub releases are retained;
+JSR skips versions already published. Registry or authentication errors remain
+visible failures.
 
-- It calculates the recommended version bump using `git-hygiene`.
-- It updates `package.json` and `CHANGELOG.md`.
-- It opens a Pull Request for review.
+For a new npm publication, run the workflow from the release tag so the workflow
+commit and package source match the provenance statement. Recovery from another
+workflow ref can restore GitHub or JSR, or skip an already published npm version,
+but cannot publish a new npm version with mismatched provenance.
 
-### 3. Phase 2: Finalize (Publishing)
+The separate JSR recovery workflow also requires an existing version tag and
+checks both version files. Do not edit a released version or move a published tag;
+make a new release for source changes. Publishing still requires npm credentials
+or its configured trusted publisher, and the JSR repository/OIDC association.
 
-When the Release PR is merged into `main`:
+## Verify locally
 
-1. The **`Release 2 - Finalize Tag`** workflow triggers automatically.
-2. It tags the commit with the new version (e.g., `v0.6.0`).
-3. It creates a GitHub Release with the changelog.
-4. It builds the library and publishes it to **NPM**.
-5. It generates SLSA Build Provenance for security.
-6. It redeploys the Documentation site.
+```bash
+pnpm test
+pnpm lint
+pnpm typecheck
+pnpm build:lib
+npm pack --dry-run
+```
 
----
+Use `deno publish --dry-run --allow-dirty` to validate unpublished JSR changes
+without publishing them. The dirty-tree flag is for this local dry run; CI
+publishes a clean, verified source checkout.
 
-## Infrastructure
-
-- **CI/CD:** `.github/workflows/`
-- **Bot Setup:** `.github/actions/setup-bot/`
-- **Hook Manager:** `lefthook.yml`
-- **Changelog Config:** `cliff.toml`
+Operational configuration lives in `.github/workflows/`, the bot action in
+`.github/actions/setup-bot/`, `lefthook.yml` and `cliff.toml`.

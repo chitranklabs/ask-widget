@@ -33,7 +33,14 @@ If you have a non-standard API or require custom fetch logic, you can pass a `st
 export type ChatStreamResult =
   string | AsyncIterable<string> | Promise<string | AsyncIterable<string>>;
 
-export type ChatStreamHandler = (message: string, history: ChatMessage[]) => ChatStreamResult;
+export interface ChatStreamContext {
+  signal: AbortSignal;
+}
+export type ChatStreamHandler = (
+  message: string,
+  history: ChatMessage[],
+  context?: ChatStreamContext,
+) => ChatStreamResult;
 ```
 
 ### Example Usage

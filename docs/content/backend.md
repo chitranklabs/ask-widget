@@ -31,21 +31,41 @@ reads `choices[0].delta.content` from JSON data lines and stops on `[DONE]`.
 The path is an ask-widget convention, not a promise that every provider exposes
 `/v1/chat`. Adapt `path`, `buildBody` and `extractChunk` to your backend.
 
-The current parser expects one JSON payload per `data:` line with a space after the colon. Generic multiline
-SSE events are not supported. `useChat` supplies history including the current
-user message; the built-in default body currently appends that message again.
-To avoid duplication, provide `buildBody` using the supplied history directly:
+The parser accepts multiline JSON data events, optional spaces after `data:`,
+CR/LF line endings and UTF-8 characters split across network chunks. It also accepts
+an unterminated final JSON frame at EOF. It does not implement EventSource
+reconnection or retry fields.
+
+`useChat` supplies history including the current user message exactly once. The
+default request body uses that history without duplicating the prompt. A standalone
+adapter call can supply prior history; the adapter appends the prompt unless it is
+already the last user message.
+
+## Cancel a response
+
+Closing the panel, pressing Escape or resetting the conversation cancels the active
+response. `useChat` also exposes `cancelResponse()`. The built-in adapter aborts
+fetch and cancels its reader. Custom handlers receive an optional third argument
+with an `AbortSignal`; pass it to your network request:
 
 ```tsx
-const { streamResponse } = useSSEStream({
-  apiUrl: '',
-  path: '/api/chat',
-  buildBody: (_message, history) => ({
-    messages: history.map(({ role, content }) => ({ role, content })),
-    stream: true,
-  }),
-});
+import type { ChatStreamHandler } from '@chitrank2050/ask-widget';
+
+const streamResponse: ChatStreamHandler = async (message, history, context) => {
+  const response = await fetch('/api/chat', {
+    method: 'POST',
+    signal: context?.signal,
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message, history }),
+  });
+  if (!response.ok) throw new Error('Chat request failed');
+  return response.text();
+};
 ```
+
+Existing two-argument handlers continue to work. Their late results are ignored
+after cancellation, but stopping custom network or server work requires the handler
+to honor the signal.
 
 ## Cross-origin requests
 

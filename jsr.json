@@ -4,16 +4,7 @@
   "description": "A lightweight chat widget for developer portfolios. Drop-in floating chat with SSE streaming, dark/light themes, and configurable positioning.",
   "exports": "./src/index.ts",
   "publish": {
-    "exclude": [
-      ".github",
-      "scripts",
-      "tests",
-      "vite.config.ts",
-      "vite.config.lib.ts",
-      "tsconfig.json",
-      "tsconfig.app.json",
-      "src/index.lib.ts",
-      "src/Main.tsx"
-    ]
+    "include": ["src/**", "README.md", "LICENSE"],
+    "exclude": ["src/assets/**", "src/env.d.ts", "src/index.lib.ts"]
   }
 }

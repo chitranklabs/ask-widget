@@ -17,7 +17,7 @@ export default defineConfig({
     lib: {
       entry: resolve(import.meta.dirname, 'src/index.lib.ts'),
       name: 'AskWidget',
-      fileName: format => `ask-widget.${format}.js`,
+      fileName: format => (format === 'cjs' ? 'ask-widget.cjs' : `ask-widget.${format}.js`),
       formats: ['es', 'cjs', 'umd'],
     },
     rollupOptions: {

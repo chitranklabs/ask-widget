@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import type { ChatMessage, ChatStreamHandler, ChatStreamResult } from '../types';
 import { useSession } from './useSession';
 
@@ -56,6 +56,7 @@ export interface UseChatReturn {
   setInputValue: (value: string) => void;
   sendMessage: (content: string) => Promise<void>;
   clearHistory: () => void;
+  cancelResponse: () => void;
 }
 
 export function useChat({
@@ -63,28 +64,65 @@ export function useChat({
   streamResponse,
   persistenceKey,
 }: UseChatOptions = {}): UseChatReturn {
-  const defaultMessages = initialMessage ? [createMessage('assistant', initialMessage, true)] : [];
+  const defaultMessages = useMemo(
+    () => (initialMessage ? [createMessage('assistant', initialMessage, true)] : []),
+    [initialMessage],
+  );
   const { messages, setMessages, clearSession } = useSession(
     persistenceKey || 'ask_widget_temp',
     defaultMessages,
+  );
+
+  const currentHistory = useRef(messages);
+  useEffect(() => {
+    currentHistory.current = messages;
+  }, [messages]);
+  const updateMessages = useCallback(
+    (update: ChatMessage[] | ((messages: ChatMessage[]) => ChatMessage[])) => {
+      const next = typeof update === 'function' ? update(currentHistory.current) : update;
+      currentHistory.current = next;
+      setMessages(next);
+    },
+    [setMessages],
   );
 
   const [isStreaming, setIsStreaming] = useState(false);
   const [latency, setLatency] = useState<number | null>(null);
   const [activeStreamId, setActiveStreamId] = useState<string | null>(null);
   const [inputValue, setInputValue] = useState('');
+  const activeRequest = useRef<AbortController | null>(null);
+
+  const cancelResponse = useCallback(() => {
+    activeRequest.current?.abort();
+    activeRequest.current = null;
+    setIsStreaming(false);
+    setActiveStreamId(null);
+  }, []);
+
+  useEffect(() => {
+    // The conversation key owns the external request; reflect its cancellation in the UI.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    cancelResponse();
+    return () => {
+      activeRequest.current?.abort();
+      activeRequest.current = null;
+    };
+  }, [persistenceKey, cancelResponse]);
 
   const sendMessage = useCallback(
     async (content: string) => {
       const prompt = content.trim();
-      if (!prompt || isStreaming) return;
+      if (!prompt || activeRequest.current) return;
+      const controller = new AbortController();
+      activeRequest.current = controller;
+      const isActive = () => activeRequest.current === controller && !controller.signal.aborted;
 
       const startedAt = getNow();
       const userMessage = createMessage('user', prompt);
       const assistantMessage = createMessage('assistant', '');
-      const nextHistory = [...messages, userMessage];
+      const nextHistory = [...currentHistory.current, userMessage];
 
-      setMessages([...nextHistory, assistantMessage]);
+      updateMessages([...nextHistory, assistantMessage]);
       setInputValue('');
       setLatency(null);
       setIsStreaming(true);
@@ -97,27 +135,31 @@ export function useChat({
           throw new Error('No stream response handler provided');
         }
 
-        const stream = toAsyncChunks(streamResponse(prompt, nextHistory));
+        const stream = toAsyncChunks(
+          streamResponse(prompt, nextHistory, { signal: controller.signal }),
+        );
 
         for await (const chunk of stream) {
-          if (!sawFirstChunk) {
+          if (!isActive()) break;
+          if (isActive() && !sawFirstChunk) {
             setLatency((getNow() - startedAt) / 1000);
             sawFirstChunk = true;
           }
 
-          setMessages(current =>
+          updateMessages(current =>
             current.map(msg =>
               msg.id === assistantMessage.id ? { ...msg, content: msg.content + chunk } : msg,
             ),
           );
         }
 
-        if (!sawFirstChunk) {
+        if (isActive() && !sawFirstChunk) {
           setLatency((getNow() - startedAt) / 1000);
         }
       } catch (error) {
+        if (!isActive()) return;
         const fallback = error instanceof Error ? error.message : 'Unable to complete response.';
-        setMessages(current =>
+        updateMessages(current =>
           current.map(msg =>
             msg.id === assistantMessage.id
               ? { ...msg, content: `Stream interrupted. ${fallback}` }
@@ -125,18 +167,23 @@ export function useChat({
           ),
         );
       } finally {
-        setIsStreaming(false);
-        setActiveStreamId(null);
+        if (activeRequest.current === controller) {
+          activeRequest.current = null;
+          setIsStreaming(false);
+          setActiveStreamId(null);
+        }
       }
     },
-    [isStreaming, messages, streamResponse, setMessages],
+    [streamResponse, updateMessages],
   );
 
   const clearHistory = useCallback(() => {
+    cancelResponse();
+    currentHistory.current = defaultMessages;
     clearSession();
     setLatency(null);
     setInputValue('');
-  }, [clearSession]);
+  }, [clearSession, cancelResponse, defaultMessages]);
 
   return {
     messages,
@@ -147,5 +194,6 @@ export function useChat({
     setInputValue,
     sendMessage,
     clearHistory,
+    cancelResponse,
   };
 }

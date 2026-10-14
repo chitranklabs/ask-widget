@@ -3,7 +3,7 @@
  * Handles the open/closed toggle and connects UI to the useChat hook.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import type { ChatWidgetProps } from '../types';
 import { useChat } from '../hooks/useChat';
 import { useSSEStream } from '../hooks/useSSEStream';
@@ -49,6 +49,12 @@ export default function ChatWidget({
   persistenceKey = 'ask_widget_session',
 }: ChatWidgetProps): React.JSX.Element {
   const [isOpen, setIsOpen] = useState(defaultOpen);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const wasOpen = useRef(defaultOpen);
+  useEffect(() => {
+    if (!isOpen && wasOpen.current) rootRef.current?.querySelector('button')?.focus();
+    wasOpen.current = isOpen;
+  }, [isOpen]);
 
   // When apiUrl is provided and no custom streamResponse is given, use the built-in SSE adapter.
   const { streamResponse: sseStreamResponse } = useSSEStream(
@@ -66,6 +72,7 @@ export default function ChatWidget({
     setInputValue,
     sendMessage,
     clearHistory,
+    cancelResponse,
   } = useChat({
     initialMessage,
     streamResponse: resolvedStreamResponse,
@@ -88,7 +95,12 @@ export default function ChatWidget({
   } as React.CSSProperties;
 
   return (
-    <div className={`chat-widget chat-widget--${position}`} data-theme={theme} style={customStyles}>
+    <div
+      ref={rootRef}
+      className={`chat-widget chat-widget--${position}`}
+      data-theme={theme}
+      style={customStyles}
+    >
       {!isOpen ? (
         <ChatButton
           title={title}
@@ -105,7 +117,10 @@ export default function ChatWidget({
           inputValue={inputValue}
           onInputChange={setInputValue}
           onSubmit={handleSubmit}
-          onCollapse={() => setIsOpen(false)}
+          onCollapse={() => {
+            cancelResponse();
+            setIsOpen(false);
+          }}
           onReset={clearHistory}
           placeholder={placeholder}
           latency={latency}

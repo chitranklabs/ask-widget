@@ -70,3 +70,12 @@ project base. The website's `llms.txt` links to the Docs Markdown exports.
 
 Run `pnpm --filter ask-widget-website test:seo` against a production build, or set
 `TEST_BASE_URL` to an existing local server to check its rendered metadata.
+
+Identity synchronization is explicit: run
+`pnpm --filter ask-widget-website sync:identity` to refresh the checked-in fallback,
+then review the result. Normal development and production builds do not rewrite
+that file from a remote response.
+
+`build:lib` verifies ESM and CommonJS public exports, SSR rendering and both
+stylesheet aliases after emitting the bundle. CommonJS output uses `.cjs` because
+the package is declared as an ES module.

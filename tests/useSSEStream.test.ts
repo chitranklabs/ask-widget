@@ -14,6 +14,7 @@ describe('useSSEStream', () => {
     const mockReader = {
       read: vi.fn().mockResolvedValue({ done: true, value: undefined }),
       releaseLock: vi.fn(),
+      cancel: vi.fn().mockResolvedValue(undefined),
     };
     const mockResponse = {
       ok: true,
@@ -32,6 +33,7 @@ describe('useSSEStream', () => {
         headers: expect.objectContaining({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({
           messages: [{ role: 'user', content: 'Hello' }],
+          stream: true,
         }),
       }),
     );
@@ -40,9 +42,9 @@ describe('useSSEStream', () => {
   it('should yield chunks from valid SSE data', async () => {
     const encoder = new TextEncoder();
     const chunks = [
-      encoder.encode('data: {"choices":[{"delta":{"content":"Hello"}}]}\n'),
-      encoder.encode('data: {"choices":[{"delta":{"content":" World"}}]}\n'),
-      encoder.encode('data: [DONE]\n'),
+      encoder.encode('data: {"choices":[{"delta":{"content":"Hello"}}]}\n\n'),
+      encoder.encode('data: {"choices":[{"delta":{"content":" World"}}]}\n\n'),
+      encoder.encode('data: [DONE]\n\n'),
     ];
 
     let chunkIdx = 0;
@@ -54,6 +56,7 @@ describe('useSSEStream', () => {
         return Promise.resolve({ done: true });
       }),
       releaseLock: vi.fn(),
+      cancel: vi.fn().mockResolvedValue(undefined),
     };
 
     const mockResponse = {
@@ -91,9 +94,10 @@ describe('useSSEStream', () => {
     const mockReader = {
       read: vi
         .fn()
-        .mockResolvedValueOnce({ done: false, value: encoder.encode('data: {invalid\n') })
+        .mockResolvedValueOnce({ done: false, value: encoder.encode('data: {invalid\n\n') })
         .mockResolvedValueOnce({ done: true }),
       releaseLock: vi.fn(),
+      cancel: vi.fn().mockResolvedValue(undefined),
     };
 
     const mockResponse = {
@@ -120,9 +124,13 @@ describe('useSSEStream', () => {
     const mockReader = {
       read: vi
         .fn()
-        .mockResolvedValueOnce({ done: false, value: encoder.encode('data: {"text":"Custom"}\n') })
+        .mockResolvedValueOnce({
+          done: false,
+          value: encoder.encode('data: {"text":"Custom"}\n\n'),
+        })
         .mockResolvedValueOnce({ done: true }),
       releaseLock: vi.fn(),
+      cancel: vi.fn().mockResolvedValue(undefined),
     };
 
     const mockResponse = {
@@ -145,5 +153,95 @@ describe('useSSEStream', () => {
 
     expect(fetch).toHaveBeenCalledWith(`${apiUrl}/custom`, expect.anything());
     expect(value).toBe('Custom');
+  });
+
+  it('includes the submitted prompt once when history already contains it', async () => {
+    vi.mocked(fetch).mockResolvedValue(
+      new Response(
+        new ReadableStream({
+          start(controller) {
+            controller.close();
+          },
+        }),
+      ),
+    );
+    const { result } = renderHook(() => useSSEStream({ apiUrl }));
+    await result.current
+      .streamResponse('Hello', [{ id: '1', role: 'user', content: 'Hello', timestamp: new Date() }])
+      .next();
+    const body = JSON.parse(String(vi.mocked(fetch).mock.calls[0][1]?.body));
+    expect(body.messages).toEqual([{ role: 'user', content: 'Hello' }]);
+  });
+
+  it('reads multiline JSON and data fields without a space across UTF-8 chunks', async () => {
+    const bytes = new TextEncoder().encode(
+      'data:{"choices": [\r\ndata:{"delta":{"content":"café"}}]}\r\n\r\n',
+    );
+    vi.mocked(fetch).mockResolvedValue(
+      new Response(
+        new ReadableStream({
+          start(controller) {
+            for (const byte of bytes) controller.enqueue(new Uint8Array([byte]));
+            controller.close();
+          },
+        }),
+      ),
+    );
+    const { result } = renderHook(() => useSSEStream({ apiUrl }));
+    const values: string[] = [];
+    for await (const value of result.current.streamResponse('Hi', [])) values.push(value);
+    expect(values).toEqual(['café']);
+  });
+
+  it('accepts an unterminated final JSON data frame at EOF', async () => {
+    vi.mocked(fetch).mockResolvedValue(
+      new Response('data: {"choices":[{"delta":{"content":"final"}}]}'),
+    );
+    const { result } = renderHook(() => useSSEStream({ apiUrl }));
+    const values: string[] = [];
+    for await (const value of result.current.streamResponse('Hi', [])) values.push(value);
+    expect(values).toEqual(['final']);
+  });
+
+  it('cancels the response stream when the consumer stops reading', async () => {
+    const cancel = vi.fn();
+    vi.mocked(fetch).mockResolvedValue(
+      new Response(
+        new ReadableStream({
+          start(controller) {
+            controller.enqueue(
+              new TextEncoder().encode('data: {"choices":[{"delta":{"content":"one"}}]}\n\n'),
+            );
+          },
+          cancel,
+        }),
+      ),
+    );
+    const { result } = renderHook(() => useSSEStream({ apiUrl }));
+    const stream = result.current.streamResponse('Hi', []);
+    await stream.next();
+    await stream.return();
+    expect(cancel).toHaveBeenCalled();
+  });
+  it('aborts a pending reader using the adapter context', async () => {
+    const controller = new AbortController();
+    const cancel = vi.fn();
+    vi.mocked(fetch).mockResolvedValue(new Response(new ReadableStream({ cancel })));
+    const { result } = renderHook(() => useSSEStream({ apiUrl }));
+    const pending = result.current
+      .streamResponse('Hello', [], { signal: controller.signal })
+      .next();
+    await vi.waitFor(() => expect(fetch).toHaveBeenCalled());
+    controller.abort();
+    expect((await pending).done).toBe(true);
+    expect(cancel).toHaveBeenCalled();
+  });
+
+  it('handles an error response with a null JSON body', async () => {
+    vi.mocked(fetch).mockResolvedValue(new Response('null', { status: 403 }));
+    const { result } = renderHook(() => useSSEStream({ apiUrl }));
+    await expect(result.current.streamResponse('Hello', []).next()).rejects.toThrow(
+      'API request failed',
+    );
   });
 });

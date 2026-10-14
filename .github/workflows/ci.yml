@@ -11,8 +11,6 @@ on:
   push:
     branches: [main]
     paths-ignore:
-      - 'docs/**'
-      - '**.md'
       - '.github/ISSUE_TEMPLATE/**'
       - '.github/PULL_REQUEST_TEMPLATE.md'
       - '.github/FUNDING.yml'
@@ -26,8 +24,6 @@ on:
   pull_request:
     branches: [main]
     paths-ignore:
-      - 'docs/**'
-      - '**.md'
       - '.github/ISSUE_TEMPLATE/**'
       - '.github/PULL_REQUEST_TEMPLATE.md'
       - '.github/FUNDING.yml'
@@ -58,9 +54,12 @@ jobs:
     timeout-minutes: 5
     permissions:
       contents: read
+      pull-requests: read
     outputs:
       src: ${{ steps.filter.outputs.src }}
       deps: ${{ steps.filter.outputs.deps }}
+      website: ${{ steps.filter.outputs.website }}
+      docs: ${{ steps.filter.outputs.docs }}
       lint: ${{ steps.filter.outputs.lint }}
       workflows: ${{ steps.filter.outputs.workflows }}
     steps:
@@ -81,16 +80,28 @@ jobs:
           filters: |
             src:
               - 'src/**'
+              - 'tests/**'
+              - 'vitest.config.ts'
+              - 'scripts/verify-package.mjs'
               - 'index.html'
               - 'vite.config*.ts'
               - 'public/**'
+            website:
+              - 'website/**'
+              - 'assets/**'
+            docs:
+              - 'docs/**'
+              - 'assets/**'
             deps:
               - 'pnpm-lock.yaml'
-              - 'package.json'
+              - '**/package.json'
+              - 'pnpm-workspace.yaml'
             lint:
               - 'eslint.config.js'
               - 'tsconfig*.json'
               - '.prettierrc'
+              - '.prettierignore'
+              - '*.md'
             workflows:
               - '.github/workflows/**'
               - '.github/actions/**'
@@ -99,7 +110,7 @@ jobs:
   quality:
     name: Hygiene & Security 🧼🛡️
     needs: changes
-    if: needs.changes.outputs.src == 'true' || needs.changes.outputs.deps == 'true' || needs.changes.outputs.lint == 'true' || needs.changes.outputs.workflows == 'true'
+    if: needs.changes.outputs.website == 'true' || needs.changes.outputs.docs == 'true' || needs.changes.outputs.src == 'true' || needs.changes.outputs.deps == 'true' || needs.changes.outputs.lint == 'true' || needs.changes.outputs.workflows == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
@@ -133,15 +144,21 @@ jobs:
         env:
           HAS_SRC: ${{ needs.changes.outputs.src }}
           HAS_DEPS: ${{ needs.changes.outputs.deps }}
+          HAS_WEBSITE: ${{ needs.changes.outputs.website }}
+          HAS_DOCS: ${{ needs.changes.outputs.docs }}
         run: |
           echo "::group::Starting Parallel Checks"
           mkdir -p .ci-status
 
-          if [ "$HAS_SRC" == "true" ] || [ "$HAS_DEPS" == "true" ]; then
-            (pnpm run build > .ci-status/build.log 2>&1 || echo "1" > .ci-status/build.fail) &
+          if [ "$HAS_SRC" == "true" ] || [ "$HAS_DEPS" == "true" ] || [ "$HAS_WEBSITE" == "true" ]; then
+            ((pnpm run build && pnpm run test:seo) > .ci-status/build.log 2>&1 || echo "1" > .ci-status/build.fail) &
           fi
 
-          if [ "$HAS_SRC" == "true" ]; then
+          if [ "$HAS_DOCS" == "true" ] || [ "$HAS_SRC" == "true" ] || [ "$HAS_DEPS" == "true" ]; then
+            (pnpm run docs:build > .ci-status/docs.log 2>&1 || echo "1" > .ci-status/docs.fail) &
+          fi
+
+          if [ "$HAS_SRC" == "true" ] || [ "$HAS_DEPS" == "true" ]; then
             (pnpm run test:coverage > .ci-status/test.log 2>&1 || echo "1" > .ci-status/test.fail) &
             (pnpm run typecheck > .ci-status/typecheck.log 2>&1 || echo "1" > .ci-status/typecheck.fail) &
           fi

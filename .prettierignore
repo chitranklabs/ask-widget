@@ -10,3 +10,5 @@ CHANGELOG.md
 **/identity.json
 .husky
 .env
+.next-*
+docs/data/api-props.mjs

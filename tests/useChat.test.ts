@@ -91,4 +91,159 @@ describe('useChat', () => {
 
     expect(result.current.messages[1].content).toContain('No stream response handler');
   });
+
+  it('prevents two submissions in the same render turn', async () => {
+    let resolve!: (value: string) => void;
+    const handler = vi.fn(
+      () =>
+        new Promise<string>(done => {
+          resolve = done;
+        }),
+    );
+    const { result } = renderHook(() => useChat({ streamResponse: handler }));
+    let first!: Promise<void>;
+    await act(async () => {
+      first = result.current.sendMessage('First');
+      await result.current.sendMessage('Second');
+    });
+    expect(handler).toHaveBeenCalledTimes(1);
+    await act(async () => {
+      resolve('Done');
+      await first;
+    });
+  });
+
+  it('does not allow a cleared pending response to affect a new response', async () => {
+    let resolveOld!: (value: string) => void;
+    let resolveNew!: (value: string) => void;
+    const handler = vi
+      .fn()
+      .mockImplementationOnce(
+        () =>
+          new Promise<string>(resolve => {
+            resolveOld = resolve;
+          }),
+      )
+      .mockImplementationOnce(
+        () =>
+          new Promise<string>(resolve => {
+            resolveNew = resolve;
+          }),
+      );
+    const { result } = renderHook(() => useChat({ streamResponse: handler }));
+    let old!: Promise<void>;
+    let current!: Promise<void>;
+    act(() => {
+      old = result.current.sendMessage('Old');
+    });
+    act(() => {
+      result.current.clearHistory();
+    });
+    act(() => {
+      current = result.current.sendMessage('New');
+    });
+    await act(async () => {
+      resolveOld('Old answer');
+      await old;
+    });
+    expect(result.current.isStreaming).toBe(true);
+    await act(async () => {
+      resolveNew('New answer');
+      await current;
+    });
+    expect(result.current.messages.map(message => message.content)).toEqual(['New', 'New answer']);
+  });
+  it('aborts the adapter context on unmount', async () => {
+    let signal: AbortSignal | undefined;
+    let resolve!: (value: string) => void;
+    const { result, unmount } = renderHook(() =>
+      useChat({
+        streamResponse: (_message, _history, context) => {
+          signal = context?.signal;
+          return new Promise<string>(done => {
+            resolve = done;
+          });
+        },
+      }),
+    );
+    let pending!: Promise<void>;
+    act(() => {
+      pending = result.current.sendMessage('Hello');
+    });
+    unmount();
+    expect(signal?.aborted).toBe(true);
+    await act(async () => {
+      resolve('Late');
+      await pending;
+    });
+  });
+
+  it('cancels a response without displaying an abort error', async () => {
+    let reject!: (error: Error) => void;
+    const { result } = renderHook(() =>
+      useChat({
+        streamResponse: () =>
+          new Promise<string>((_resolve, fail) => {
+            reject = fail;
+          }),
+      }),
+    );
+    let pending!: Promise<void>;
+    act(() => {
+      pending = result.current.sendMessage('Hello');
+    });
+    act(() => {
+      result.current.cancelResponse();
+    });
+    expect(result.current.isStreaming).toBe(false);
+    await act(async () => {
+      reject(new DOMException('Aborted', 'AbortError'));
+      await pending;
+    });
+    expect(result.current.messages.at(-1)?.content).not.toContain('Stream interrupted');
+  });
+  it('cancels a pending response when the conversation key changes', async () => {
+    let signal: AbortSignal | undefined;
+    let resolve!: (value: string) => void;
+    const { result, rerender } = renderHook(
+      ({ key }) =>
+        useChat({
+          persistenceKey: key,
+          streamResponse: (_message, _history, context) => {
+            signal = context?.signal;
+            return new Promise<string>(done => {
+              resolve = done;
+            });
+          },
+        }),
+      { initialProps: { key: 'first' } },
+    );
+    let pending!: Promise<void>;
+    act(() => {
+      pending = result.current.sendMessage('Old');
+    });
+    rerender({ key: 'other' });
+    expect(signal?.aborted).toBe(true);
+    expect(result.current.isStreaming).toBe(false);
+    await act(async () => {
+      resolve('Late');
+      await pending;
+    });
+    expect(result.current.messages).toEqual([]);
+  });
+  it('keeps history cleared when reset and submission share one event', async () => {
+    const handler = vi.fn().mockResolvedValue('Answer');
+    const { result } = renderHook(() => useChat({ streamResponse: handler }));
+    await act(async () => {
+      await result.current.sendMessage('Old');
+    });
+    await act(async () => {
+      result.current.clearHistory();
+      await result.current.sendMessage('New');
+    });
+    expect(handler.mock.calls[1][1].map((message: { content: string }) => message.content)).toEqual(
+      ['New'],
+    );
+    expect(result.current.messages.map(message => message.content)).toEqual(['New', 'Answer']);
+  });
 });

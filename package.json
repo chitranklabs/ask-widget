@@ -29,14 +29,14 @@
     "chatbot",
     "ai"
   ],
-  "main": "./dist/ask-widget.cjs.js",
+  "main": "./dist/ask-widget.cjs",
   "module": "./dist/ask-widget.es.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/ask-widget.es.js",
-      "require": "./dist/ask-widget.cjs.js"
+      "require": "./dist/ask-widget.cjs"
     },
     "./styles.css": "./dist/style.css",
     "./style.css": "./dist/style.css"
@@ -52,7 +52,7 @@
   "scripts": {
     "dev": "pnpm --filter ask-widget-website dev",
     "build": "pnpm run build:lib && pnpm --filter ask-widget-website build",
-    "build:lib": "vite build --config vite.config.lib.ts",
+    "build:lib": "vite build --config vite.config.lib.ts && node scripts/verify-package.mjs",
     "preview": "pnpm --filter ask-widget-website start",
     "test:seo": "pnpm --filter ask-widget-website test:seo",
     "menu": "node scripts/menu.mjs",
