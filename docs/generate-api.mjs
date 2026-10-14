@@ -1,6 +1,6 @@
 import { withCustomConfig } from 'react-docgen-typescript';
 import { fileURLToPath } from 'node:url';
-import { writeFile } from 'node:fs/promises';
+import { mkdir, writeFile } from 'node:fs/promises';
 
 const root = new URL('../', import.meta.url);
 const components = withCustomConfig(fileURLToPath(new URL('tsconfig.app.json', root)), {
@@ -16,6 +16,7 @@ const apiRows = Object.entries(props).map(([name, prop]) => ({
   description: prop.description.split('\n@example')[0].trim(),
 }));
 
+await mkdir(new URL('./data/', import.meta.url), { recursive: true });
 await writeFile(
   new URL('./data/api-props.mjs', import.meta.url),
   `// Generated from ChatWidget; run docs prebuild to refresh.\nexport const apiRows = ${JSON.stringify(apiRows, null, 2)};\n`,
