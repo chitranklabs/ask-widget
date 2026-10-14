@@ -1,7 +1,7 @@
 # =============================================================
 # Documentation Deployment 📖
 #
-# Automatically builds and deploys VitePress docs to GitHub Pages.
+# Automatically builds and deploys Monoline Docs to GitHub Pages.
 # Triggered on pushes to 'main' affecting documentation or manually.
 # =============================================================
 
@@ -14,6 +14,10 @@ on:
       - 'docs/**'
       - 'scripts/docs-deploy.sh'
       - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
+      - 'src/**'
+      - 'assets/**'
   workflow_dispatch:
 
 env:
@@ -42,7 +46,7 @@ jobs:
 
       - name: Create Bot Token 🤖🔑
         id: generate_token
-        uses: ./.github/actions/setup-bot
+        uses: $/.github/actions/setup-bot
         with:
           client-id: ${{ secrets.CHITRANK_BOT_CLIENT_ID }}
           private-key: ${{ secrets.CHITRANK_BOT_PRIVATE_KEY }}
@@ -66,13 +70,6 @@ jobs:
       - name: Install dependencies 📥
         run: pnpm install --frozen-lockfile --prefer-offline
 
-      # Match the Meterplex "Transient Docs" pattern
-      # Source stays at root, but CI copies it to docs/ for the build
-      - name: Copy transient docs 📝
-        run: |
-          cp CHANGELOG.md docs/changelog.md
-          if [ -f CODE_OF_CONDUCT.md ]; then cp CODE_OF_CONDUCT.md docs/code-of-conduct.md; fi
-
       - name: Build Documentation 🏗️
         run: pnpm run docs:build
 
@@ -80,4 +77,4 @@ jobs:
         run: |
           git config user.name "chitrank-actions[bot]"
           git config user.email "actions@github.com"
-          npx gh-pages -d docs/.vitepress/dist -m "docs: deploy automated build"
+          npx gh-pages -d docs/dist -m "docs: deploy automated build"

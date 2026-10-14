@@ -1,0 +1,61 @@
+---
+title: API reference
+seoTitle: ChatWidget props and streaming API
+description: Source-generated ChatWidget props, response adapters and customization options.
+layout: reference
+---
+
+import Table from '@chitrank2050/monoline-docs/components/Table.astro';
+import { apiRows } from '../data/api-props.mjs';
+
+## ChatWidget props
+
+Props are generated from the installed repository source. `streamResponse`
+takes precedence over `apiUrl` and `apiToken`; no backend props selects demo mode.
+
+<Table
+  variant="reference"
+  caption="ChatWidget props"
+  columns={[
+    { key: 'name', label: 'Name', format: 'code' },
+    { key: 'type', label: 'Type', format: 'code' },
+    { key: 'default', label: 'Default', format: 'code' },
+    { key: 'description', label: 'Description' },
+  ]}
+  rows={apiRows}
+/>
+
+## `ChatStreamHandler` Type
+
+If you have a non-standard API or require custom fetch logic, you can pass a `streamResponse` handler:
+
+```ts
+export type ChatStreamResult =
+  string | AsyncIterable<string> | Promise<string | AsyncIterable<string>>;
+
+export type ChatStreamHandler = (message: string, history: ChatMessage[]) => ChatStreamResult;
+```
+
+### Example Usage
+
+```tsx
+import { ChatWidget, type ChatStreamHandler } from '@chitrank2050/ask-widget';
+
+const streamResponse: ChatStreamHandler = async (message, history) => {
+  const response = await fetch('/api/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message, history }),
+  });
+  if (!response.ok) throw new Error('Chat request failed');
+  return response.text();
+};
+
+export function Assistant() {
+  return <ChatWidget streamResponse={streamResponse} />;
+}
+```
+
+This example expects a plain-text response from your own backend. For token
+streaming, use the [SSE adapter](backend.md) or return an async iterable that
+decodes your backend’s stream.

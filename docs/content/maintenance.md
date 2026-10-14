@@ -1,4 +1,7 @@
-# Maintenance & Release Guide
+---
+title: Maintenance and releases
+description: Maintainer workflow for versioning, publishing and repository checks.
+---
 
 This document describes the technical process for maintaining and releasing `@chitrank2050/ask-widget`.
 

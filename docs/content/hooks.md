@@ -1,4 +1,7 @@
-# Standalone Hooks
+---
+title: Standalone hooks
+description: Build a custom React chat interface with chat, SSE and persistence hooks.
+---
 
 **ask-widget** is more than just a component-it's a collection of headless hooks that you can use to build your own completely custom chat interface.
 

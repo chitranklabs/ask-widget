@@ -1,0 +1,71 @@
+# yaml-language-server: $schema=./node_modules/@chitrank2050/monoline-docs/schema.json
+title: ask-widget docs
+description: Install, configure and integrate the streaming React chat widget.
+site: https://chitranklabs.github.io
+base: /ask-widget/
+cleanUrls: true
+contentDirectory: ./content
+assetsDirectory: ../assets
+outDirectory: ./dist
+seo:
+  titleTemplate: '%s | ask-widget docs'
+  socialImage: /assets/banner.png
+  socialImageAlt: ask-widget — streaming React chat interface
+  author: &owner
+    type: Person
+    name: Chitrank Agnihotri
+    url: https://chitrankagnihotri.com
+    sameAs:
+      - https://github.com/chitrank2050
+      - https://www.linkedin.com/in/chitrank-agnihotri/
+  publisher: *owner
+appearance:
+  defaultMode: system
+branding:
+  favicon: /assets/logo.png
+header:
+  links:
+    - label: Website
+      href: https://ask-widget.chitrankagnihotri.com
+    - label: GitHub
+      href: https://github.com/chitranklabs/ask-widget
+content:
+  copyPageLink: true
+  editLink:
+    href: https://github.com/chitranklabs/ask-widget/edit/main/docs/content/{path}
+footer:
+  text: Released under the MIT License.
+  links:
+    - label: Created by Chitrank Agnihotri
+      href: https://chitrankagnihotri.com
+navigation:
+  - label: Guides
+    items:
+      - label: Introduction
+        href: /
+      - label: Getting started
+        href: /getting-started
+      - label: Next.js and Vite
+        href: /integrations
+      - label: Backend and SSE
+        href: /backend
+      - label: Theming
+        href: /theming
+      - label: Troubleshooting
+        href: /troubleshooting
+  - label: Reference
+    items:
+      - label: API
+        href: /api
+      - label: Hooks
+        href: /hooks
+  - label: Contributing
+    items:
+      - label: Architecture
+        href: /architecture
+      - label: Development
+        href: /development
+      - label: Maintenance
+        href: /maintenance
+      - label: Changelog
+        href: /changelog

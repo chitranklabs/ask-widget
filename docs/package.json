@@ -1,0 +1,15 @@
+{
+  "name": "ask-widget-docs",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "monoline-docs dev --port 4181",
+    "build": "monoline-docs build",
+    "prebuild": "node generate-api.mjs",
+    "predev": "node generate-api.mjs"
+  },
+  "devDependencies": {
+    "@chitrank2050/monoline-docs": "^0.3.0",
+    "react-docgen-typescript": "^2.4.0"
+  }
+}

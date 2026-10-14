@@ -1,6 +1,7 @@
 packages:
   - '.'
   - 'website'
+  - 'docs'
 
 peerDependencyRules:
   ignoreMissing:
@@ -20,3 +21,5 @@ allowBuilds:
   esbuild: true
   lefthook: true
   '@swc/core': false
+minimumReleaseAgeExclude:
+  - '@chitrank2050/monoline-docs@0.3.0'

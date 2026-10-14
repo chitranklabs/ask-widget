@@ -115,7 +115,7 @@ async function modeDocs() {
     message: '📖 Documentation - select action',
     options: [
       { value: 'docs_dev', label: 'Preview docs', hint: 'local dev' },
-      { value: 'docs_build', label: 'Build docs', hint: 'vitepress build' },
+      { value: 'docs_build', label: 'Build docs', hint: 'monoline-docs build' },
       { value: 'docs_deploy', label: 'Deploy to GH Pages', hint: 'push to gh-pages' },
     ],
   });

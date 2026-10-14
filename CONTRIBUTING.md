@@ -20,40 +20,20 @@ pnpm dev
 1. [Open an issue](https://github.com/chitranklabs/ask-widget/issues/new/choose) before starting work
 2. Fork the repo and create a branch: `git checkout -b 42-fix-sse-reconnect`
 3. Make your changes
-4. Run `pnpm changeset` and follow the prompts to describe your changes
+4. Describe the change and validation in your PR; releases use git-hygiene and git-cliff
 5. Run `pnpm build` - must pass before opening a PR
 6. Open a pull request against `main`
 
 ---
 
-## Versioning & Releases
+## Versioning and documentation
 
-We use [Changesets](https://github.com/changesets/changesets) to manage versioning and changelogs.
+Release preparation uses git-hygiene and git-cliff, not Changesets. Follow the
+[maintenance guide](docs/content/maintenance.md) for the current workflow.
 
-### 1. Adding a Changeset
-
-Every PR that introduces code changes **must** include a changeset file.
-
-```bash
-pnpm changeset
-```
-
-- Select the appropriate bump type (**patch**, **minor**, or **major**).
-- Provide a clear, user-facing summary of what changed.
-- Commit the generated `.changeset/*.md` file with your PR.
-
-### 2. Automated Releases
-
-Releases are automated via GitHub Actions:
-
-- On merge to `main`, a "Version Bump" PR is automatically created/updated if changesets exist.
-- When the **Version Bump PR** is merged, the package is automatically:
-  - Published to npm
-  - Tagged on GitHub
-  - Released on GitHub (with changelog)
-  - Documentation and Storybook are redeployed to GitHub Pages
-
----
+Run `pnpm docs:dev` for documentation at `http://localhost:4181/ask-widget/`.
+Read [Development](docs/content/development.md) for independent website/docs
+commands and required checks.
 
 ## Commit Messages
 

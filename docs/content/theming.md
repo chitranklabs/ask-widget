@@ -1,4 +1,7 @@
-# Theming
+---
+title: Theming
+description: Configure light and dark presets and custom widget colors.
+---
 
 **ask-widget** comes with a premium, monochrome design based on the "zinc" and "neutral" color palettes popular in the modern developer ecosystem.
 

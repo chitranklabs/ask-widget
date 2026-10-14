@@ -20,9 +20,8 @@ next-env.d.ts
 release-artifacts/
 *.tgz
 
-# VitePress
-docs/.vitepress/dist
-docs/.vitepress/cache
+# Documentation
+docs/dist/
 
 # Logs
 logs
@@ -69,3 +68,5 @@ gitleaks.tar.gz
 scratch/
 git-cliff/
 .eslintcache
+# Source-generated documentation data
+docs/data/api-props.mjs

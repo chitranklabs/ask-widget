@@ -98,7 +98,7 @@ export default function App() {
 
 `apiUrl` should point to your backend. Keep private provider keys on the server;
 `apiToken` and frontend environment variables are visible in the browser. See
-the [authentication guide](docs/getting-started.md#authentication). The
+the [authentication guide](docs/content/getting-started.md#authentication). The
 `style.css` alias remains available for existing consumers.
 
 ## 🛠️ Development
