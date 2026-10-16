@@ -7,7 +7,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const appRoot = path.resolve(__dirname, '..');
 
 const SITE_URL = new URL(
-  process.env.NEXT_PUBLIC_SITE_URL || 'https://ask-widget.chitrankagnihotri.com',
+  process.env.NEXT_PUBLIC_SITE_URL || 'https://askwidget.chitrankagnihotri.com',
 ).origin;
 const { version } = JSON.parse(
   await (
@@ -114,6 +114,21 @@ async function waitForServer(serverProcess) {
 
 async function runTests() {
   console.log(`\n🔍 Running ask-widget SEO & Schema Integration Test Suite (${LOCAL_URL})`);
+
+  // The legacy host must redirect once without affecting previews or the new host.
+  const vercelConfig = JSON.parse(
+    await (await import('node:fs/promises')).readFile(path.join(appRoot, 'vercel.json'), 'utf8'),
+  );
+  const legacyRedirect = vercelConfig.redirects.find(rule =>
+    rule.has?.some(
+      condition =>
+        condition.type === 'host' && condition.value === 'ask-widget.chitrankagnihotri.com',
+    ),
+  );
+  assert.ok(legacyRedirect, 'Legacy hostname must have a host-specific redirect');
+  assert.equal(legacyRedirect.source, '/:path*');
+  assert.equal(legacyRedirect.destination, 'https://askwidget.chitrankagnihotri.com/:path*');
+  assert.equal(legacyRedirect.permanent, true);
 
   // 1. Home Page & Meta Checks
   console.log('  → Verifying Homepage SEO & Metadata...');

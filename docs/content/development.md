@@ -47,7 +47,7 @@ never mounted into the Next.js application.
 
 ## SEO and deployment
 
-The website is deployed independently to `https://ask-widget.chitrankagnihotri.com`.
+The website is deployed independently to `https://askwidget.chitrankagnihotri.com`.
 For Vercel, set the project Root Directory to `website` and enable source files
 outside the Root Directory. `website/vercel.json` builds the library before Next.js
 and does not build or deploy documentation.
@@ -92,3 +92,17 @@ The menu propagates failed commands as a nonzero exit status.
 
 Use `pnpm git` to prepare a release PR through GitHub Actions or inspect recent
 release runs. Publishing and recovery follow the maintenance guide.
+
+## Website domain migration
+
+The production website uses `https://askwidget.chitrankagnihotri.com`.
+Keep both the new domain and `ask-widget.chitrankagnihotri.com` attached to the same
+Vercel project. The host-specific rule in `website/vercel.json` permanently
+redirects requests from the old hostname to the matching path on the new hostname.
+It does not redirect local development or Vercel preview hostnames.
+
+Set the production `NEXT_PUBLIC_SITE_URL` to the new origin and redeploy. Update
+the website domain in Umami and verify the new property and sitemap in Google
+Search Console. Keep the old hostname’s DNS and TLS working for existing links.
+The npm package name, repository name and GitHub Pages documentation base remain
+`ask-widget`; they are independent of the website hostname.

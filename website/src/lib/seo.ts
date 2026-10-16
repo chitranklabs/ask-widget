@@ -1,7 +1,7 @@
 import packageJson from '../../../package.json';
 
 export const siteUrl = new URL(
-  process.env.NEXT_PUBLIC_SITE_URL || 'https://ask-widget.chitrankagnihotri.com',
+  process.env.NEXT_PUBLIC_SITE_URL || 'https://askwidget.chitrankagnihotri.com',
 ).origin;
 export const packageVersion = packageJson.version;
 export const isPreviewDeployment = Boolean(

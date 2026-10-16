@@ -73,7 +73,7 @@ This project is built for the future of the web:
 
 ## 📖 Documentation & Demo
 
-- **Live Demo**: [ask-widget.chitrankagnihotri.com](https://ask-widget.chitrankagnihotri.com)
+- **Live Demo**: [askwidget.chitrankagnihotri.com](https://askwidget.chitrankagnihotri.com)
 - **API Reference**: [Automated Docs](https://chitranklabs.github.io/ask-widget/api)
 - **Theming Guide**: [Customizing Zinc](https://chitranklabs.github.io/ask-widget/theming)
 

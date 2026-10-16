@@ -2,5 +2,18 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
   "installCommand": "pnpm install --frozen-lockfile",
-  "buildCommand": "pnpm --dir .. build"
+  "buildCommand": "pnpm --dir .. build",
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "ask-widget.chitrankagnihotri.com"
+        }
+      ],
+      "destination": "https://askwidget.chitrankagnihotri.com/:path*",
+      "permanent": true
+    }
+  ]
 }

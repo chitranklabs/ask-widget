@@ -16,7 +16,7 @@ Package: @chitrank2050/ask-widget. Install with `pnpm add @chitrank2050/ask-widg
 
 ## Project
 
-- [Website](https://ask-widget.chitrankagnihotri.com)
+- [Website](https://askwidget.chitrankagnihotri.com)
 - [Source](https://github.com/chitranklabs/ask-widget)
 - [npm](https://www.npmjs.com/package/@chitrank2050/ask-widget)
 - [Author](https://chitrankagnihotri.com): Chitrank Agnihotri
