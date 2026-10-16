@@ -23,8 +23,8 @@ supply a custom response handler from the [API reference](api.mdx).
 
 ## Read with an agent
 
-Use Copy Page for a guide’s Markdown, `/ask-widget/llms.txt` to discover pages,
-and `/ask-widget/llms-full.txt` for the full published documentation. Examples
+Use Copy Page for a guide’s Markdown, `/llms.txt` to discover pages,
+and `/llms-full.txt` for the full published documentation. Examples
 are reference material; verify commands against your installed package version.
 
 ## Contribute

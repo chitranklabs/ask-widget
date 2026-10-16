@@ -100,7 +100,7 @@ export function InteractiveShowcase() {
             <span>Network</span>
             <code>No AI request</code>
           </div>
-          <a className="config-docs" href="https://chitranklabs.github.io/ask-widget/api">
+          <a className="config-docs" href="https://docs.askwidget.chitrankagnihotri.com/api">
             All component props <span aria-hidden="true">↗</span>
           </a>
         </aside>
@@ -140,7 +140,7 @@ export function InteractiveShowcase() {
           Keyboard accessible
         </span>
         <span>Bring your own backend</span>
-        <a href="https://chitranklabs.github.io/ask-widget/theming">
+        <a href="https://docs.askwidget.chitrankagnihotri.com/theming">
           Customize with CSS variables <span aria-hidden="true">↗</span>
         </a>
       </div>

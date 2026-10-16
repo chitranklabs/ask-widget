@@ -1,6 +1,6 @@
 ---
-title: Next.js and Vite
-description: Install ask-widget in Next.js App Router or a Vite React application.
+title: React chat integration for Next.js and Vite
+description: Add ask-widget to Next.js App Router or Vite with the correct client boundary, stylesheet imports and backend configuration.
 ---
 
 ## Next.js App Router

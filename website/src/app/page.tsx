@@ -62,7 +62,7 @@ export default function HomePage() {
         <div className="faq-heading">
           <h2 id="faq-heading">Frequently asked questions.</h2>
           <p>Integration, customization and what’s included.</p>
-          <a href="https://chitranklabs.github.io/ask-widget/">
+          <a href="https://docs.askwidget.chitrankagnihotri.com/">
             Explore the documentation <span aria-hidden="true">↗</span>
           </a>
         </div>

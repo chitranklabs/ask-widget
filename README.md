@@ -74,8 +74,8 @@ This project is built for the future of the web:
 ## 📖 Documentation & Demo
 
 - **Live Demo**: [askwidget.chitrankagnihotri.com](https://askwidget.chitrankagnihotri.com)
-- **API Reference**: [Automated Docs](https://chitranklabs.github.io/ask-widget/api)
-- **Theming Guide**: [Customizing Zinc](https://chitranklabs.github.io/ask-widget/theming)
+- **API Reference**: [Automated Docs](https://docs.askwidget.chitrankagnihotri.com/api)
+- **Theming Guide**: [Customizing Zinc](https://docs.askwidget.chitrankagnihotri.com/theming)
 
 ---
 

@@ -45,7 +45,10 @@ export default function ChangelogPage() {
       </div>
       <p className="mt-8 text-sm text-[var(--text-secondary)]">
         For installation and integration guidance, read the{' '}
-        <a className="underline" href="https://chitranklabs.github.io/ask-widget/getting-started">
+        <a
+          className="underline"
+          href="https://docs.askwidget.chitrankagnihotri.com/getting-started"
+        >
           getting started guide
         </a>
         .

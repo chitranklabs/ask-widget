@@ -10,7 +10,7 @@ export function TechnicalSpecsBento() {
           <br />
           Chat state, SSE streaming and session history are available as standalone React hooks.
         </p>
-        <a href="https://chitranklabs.github.io/ask-widget/hooks">Explore the hooks ↗</a>
+        <a href="https://docs.askwidget.chitrankagnihotri.com/hooks">Explore the hooks ↗</a>
       </div>
       <div>
         <span className="note-symbol" aria-hidden="true">

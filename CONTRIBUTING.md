@@ -32,7 +32,7 @@ pnpm dev
 Release preparation uses git-hygiene and git-cliff, not Changesets. Follow the
 [maintenance guide](docs/content/maintenance.md) for the current workflow.
 
-Run `pnpm docs:dev` for documentation at `http://localhost:4181/ask-widget/`.
+Run `pnpm docs:dev` for documentation at `http://localhost:4181/`.
 Read [Development](docs/content/development.md) for independent website/docs
 commands and required checks.
 

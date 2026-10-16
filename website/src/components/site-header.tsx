@@ -28,7 +28,9 @@ export function SiteHeader() {
         <Navbar.Link asChild className="header-secondary-link">
           <Link href="/#showcase">Playground</Link>
         </Navbar.Link>
-        <Navbar.Link href="https://chitranklabs.github.io/ask-widget/">Documentation</Navbar.Link>
+        <Navbar.Link href="https://docs.askwidget.chitrankagnihotri.com/">
+          Documentation
+        </Navbar.Link>
         <Navbar.Link
           className="header-secondary-link"
           href="https://github.com/chitranklabs/ask-widget"

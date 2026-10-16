@@ -79,10 +79,12 @@ jobs:
         run: pnpm install --frozen-lockfile --prefer-offline
 
       - name: Build Documentation 🏗️
+        env:
+          CLOUDFLARE_WEB_ANALYTICS_TOKEN: ${{ vars.CLOUDFLARE_DOCS_ANALYTICS_TOKEN }}
         run: pnpm run docs:build
 
       - name: Deploy to GitHub Pages 🚀
         run: |
           git config user.name "chitrank-actions[bot]"
           git config user.email "actions@github.com"
-          npx gh-pages -d docs/dist -m "docs: deploy automated build"
+          npx --yes gh-pages@6.3.0 -d docs/dist --nojekyll --cname docs.askwidget.chitrankagnihotri.com -m "docs: deploy automated build"

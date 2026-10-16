@@ -6,13 +6,13 @@ export function ApiReference() {
         <p>The docs cover the component API, streaming contract and custom interfaces.</p>
       </div>
       <div>
-        <a href="https://chitranklabs.github.io/ask-widget/api">
+        <a href="https://docs.askwidget.chitrankagnihotri.com/api">
           Component API <span aria-hidden="true">↗</span>
         </a>
-        <a href="https://chitranklabs.github.io/ask-widget/backend">
+        <a href="https://docs.askwidget.chitrankagnihotri.com/backend">
           Backend & SSE <span aria-hidden="true">↗</span>
         </a>
-        <a href="https://chitranklabs.github.io/ask-widget/hooks">
+        <a href="https://docs.askwidget.chitrankagnihotri.com/hooks">
           Headless hooks <span aria-hidden="true">↗</span>
         </a>
       </div>

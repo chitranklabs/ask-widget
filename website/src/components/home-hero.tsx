@@ -18,7 +18,10 @@ export function HomeHero() {
         <Button asChild variant="primary">
           <a href="#integration">Install ask-widget</a>
         </Button>
-        <a className="quiet-link" href="https://chitranklabs.github.io/ask-widget/getting-started">
+        <a
+          className="quiet-link"
+          href="https://docs.askwidget.chitrankagnihotri.com/getting-started"
+        >
           Read the guide <span aria-hidden="true">↗</span>
         </a>
         <span>React 18+ · TypeScript · MIT</span>

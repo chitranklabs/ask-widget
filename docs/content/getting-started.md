@@ -1,6 +1,6 @@
 ---
-title: Getting started
-description: Install the React chat widget and connect your backend.
+title: Install the React chat widget
+description: Install ask-widget, add its stylesheet and connect a React chat interface to your own streaming backend.
 ---
 
 **ask-widget** is a lightweight React component for adding a streaming AI chat assistant to your developer portfolio. It’s strictly monochrome by default and designed to align with the popular "zinc/neutral" aesthetic.

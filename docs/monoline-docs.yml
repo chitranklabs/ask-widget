@@ -1,8 +1,8 @@
 # yaml-language-server: $schema=./node_modules/@chitrank2050/monoline-docs/schema.json
 title: ask-widget docs
 description: Install, configure and integrate the streaming React chat widget.
-site: https://chitranklabs.github.io
-base: /ask-widget/
+site: https://docs.askwidget.chitrankagnihotri.com
+base: /
 cleanUrls: true
 contentDirectory: ./content
 assetsDirectory: ../assets
@@ -10,7 +10,7 @@ outDirectory: ./dist
 stylesheet: /assets/theme.css
 seo:
   titleTemplate: '%s | ask-widget docs'
-  socialImage: /assets/banner.png
+  socialImage: /assets/social-card.png
   socialImageAlt: ask-widget — streaming React chat interface
   author: &owner
     type: Person

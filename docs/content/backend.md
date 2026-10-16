@@ -1,6 +1,6 @@
 ---
-title: Backend and SSE
-description: Connect the widget to your own authenticated streaming backend.
+title: Connect a streaming chat backend
+description: Connect your React chat widget to an SSE endpoint or custom response handler while keeping provider credentials on your server.
 ---
 
 ## Keep credentials on the server

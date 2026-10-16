@@ -4,9 +4,9 @@ import { siteUrl } from './seo';
 
 export const socialImage = {
   url: new URL('/ask-widget-og.png', `${siteUrl}/`).toString(),
-  width: 1024,
-  height: 1024,
-  alt: 'ask-widget - A lightweight floating chat widget with SSE streaming and neutral zinc aesthetics',
+  width: 1200,
+  height: 630,
+  alt: 'ask-widget — streaming React chat, your UI and your backend',
 } as const;
 
 interface PageMetadataInput {

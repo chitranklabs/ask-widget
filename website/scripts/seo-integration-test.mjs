@@ -274,6 +274,26 @@ async function runTests() {
 
   const { response: ogRes } = await fetchRoute('/ask-widget-og.png');
   assert.equal(ogRes.status, 200, 'ask-widget-og.png must return HTTP 200');
+  const imageResponse = await fetch(`${LOCAL_URL}/ask-widget-og.png`);
+  const image = Buffer.from(await imageResponse.arrayBuffer());
+  assert.equal(
+    image.subarray(0, 8).toString('hex'),
+    '89504e470d0a1a0a',
+    'Social card must be a real PNG',
+  );
+  assert.equal(image.readUInt32BE(16), 1200, 'Social card width must match metadata');
+  assert.equal(image.readUInt32BE(20), 630, 'Social card height must match metadata');
+  assert.equal(
+    getAttribute(findElementByAttribute(homeHtml, 'meta', 'property', 'og:image:width'), 'content'),
+    '1200',
+  );
+  assert.equal(
+    getAttribute(
+      findElementByAttribute(homeHtml, 'meta', 'property', 'og:image:height'),
+      'content',
+    ),
+    '630',
+  );
 
   const { response: manifestRes } = await fetchRoute('/manifest.webmanifest');
   assert.equal(manifestRes.status, 200, 'manifest.webmanifest must return HTTP 200');

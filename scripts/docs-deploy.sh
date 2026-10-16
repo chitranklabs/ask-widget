@@ -24,8 +24,8 @@ log_success "Docs build complete."
 
 # Step 2: Deploy
 log_step 2 $TOTAL_STEPS "Deploying site to GitHub Pages..."
-npx gh-pages -d docs/dist -m "docs: deploy v$(node -p "require('./package.json').version")"
+npx --yes gh-pages@6.3.0 -d docs/dist --nojekyll --cname docs.askwidget.chitrankagnihotri.com -m "docs: deploy v$(node -p "require('./package.json').version")"
 log_success "Deployment complete."
 
 log_header "✅ Documentation site is now Live"
-log_info "URL: https://chitranklabs.github.io/ask-widget/"
+log_info "URL: https://docs.askwidget.chitrankagnihotri.com/"

@@ -24,7 +24,7 @@ export function SiteFooter() {
         {
           title: 'Resources',
           links: [
-            { href: 'https://chitranklabs.github.io/ask-widget/', label: 'Documentation' },
+            { href: 'https://docs.askwidget.chitrankagnihotri.com/', label: 'Documentation' },
             { href: '/changelog', label: 'Changelog' },
             { href: 'https://www.npmjs.com/package/@chitrank2050/ask-widget', label: 'npm' },
           ],

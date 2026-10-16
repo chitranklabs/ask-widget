@@ -6,13 +6,13 @@ Package: @chitrank2050/ask-widget. Install with `pnpm add @chitrank2050/ask-widg
 
 ## Documentation
 
-- [Documentation index](https://chitranklabs.github.io/ask-widget/llms.txt): Discover guides and reference pages.
-- [Full documentation](https://chitranklabs.github.io/ask-widget/llms-full.txt): All documentation as Markdown.
-- [Getting started](https://chitranklabs.github.io/ask-widget/getting-started.md): Installation and first integration.
-- [Backend and SSE](https://chitranklabs.github.io/ask-widget/backend.md): Keep provider credentials on the server. apiUrl appends /v1/chat; custom handlers support other response formats.
-- [Component API](https://chitranklabs.github.io/ask-widget/api.md): Source-generated props and response-handler types.
-- [Hooks](https://chitranklabs.github.io/ask-widget/hooks.md): Actual signatures and usage.
-- [Theming](https://chitranklabs.github.io/ask-widget/theming.md): CSS variables and host-style considerations.
+- [Documentation index](https://docs.askwidget.chitrankagnihotri.com/llms.txt): Discover guides and reference pages.
+- [Full documentation](https://docs.askwidget.chitrankagnihotri.com/llms-full.txt): All documentation as Markdown.
+- [Getting started](https://docs.askwidget.chitrankagnihotri.com/getting-started.md): Installation and first integration.
+- [Backend and SSE](https://docs.askwidget.chitrankagnihotri.com/backend.md): Keep provider credentials on the server. apiUrl appends /v1/chat; custom handlers support other response formats.
+- [Component API](https://docs.askwidget.chitrankagnihotri.com/api.md): Source-generated props and response-handler types.
+- [Hooks](https://docs.askwidget.chitrankagnihotri.com/hooks.md): Actual signatures and usage.
+- [Theming](https://docs.askwidget.chitrankagnihotri.com/theming.md): CSS variables and host-style considerations.
 
 ## Project
 

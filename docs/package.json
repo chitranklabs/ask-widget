@@ -3,8 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "monoline-docs dev --port 4181",
-    "build": "monoline-docs build",
+    "dev": "monoline-docs dev --config monoline-docs.config.mjs --port 4181",
+    "build": "monoline-docs build --config monoline-docs.config.mjs",
     "prebuild": "node generate-api.mjs",
     "predev": "node generate-api.mjs"
   },
