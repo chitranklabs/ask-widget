@@ -7,7 +7,7 @@ custom interface with styles.
 ## Demo responses appear instead of real responses
 
 Without a custom `streamResponse` or a non-empty `apiUrl`, the component selects
-the built-in demo. See [Backend and SSE](/ask-widget/backend) for same-origin requests.
+the built-in demo. See [Backend and SSE](/backend) for same-origin requests.
 
 ## Requests fail or responses stay empty
 
@@ -26,5 +26,5 @@ origin; it is not server synchronization or secure storage.
 
 Close, Escape and reset cancel the active chat request and ignore late results.
 Pass the handler's optional `context.signal` to fetch to stop its network work too.
-See [Cancellation](/ask-widget/backend#cancel-a-response). Existing handlers that ignore the
+See [Cancellation](/backend#cancel-a-response). Existing handlers that ignore the
 signal cannot have their remote work forcibly stopped by the widget.

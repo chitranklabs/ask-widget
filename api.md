@@ -59,4 +59,4 @@ export function Assistant() {
 }
 ```
 
-This example expects a plain-text response from your own backend. For token streaming, use the [SSE adapter](/ask-widget/backend) or return an async iterable that decodes your backend’s stream.
+This example expects a plain-text response from your own backend. For token streaming, use the [SSE adapter](/backend) or return an async iterable that decodes your backend’s stream.

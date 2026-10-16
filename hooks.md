@@ -57,7 +57,7 @@ object. Treat persisted chat history as browser-local data, not secure storage.
 
 `cancelResponse()` stops the current response without clearing completed messages.
 `clearHistory()` cancels before resetting. Custom handlers can use their optional
-abort context as shown in [Backend and SSE](/ask-widget/backend#cancel-a-response).
+abort context as shown in [Backend and SSE](/backend#cancel-a-response).
 
 Persisted messages are validated before restoration. An unavailable storage API
 falls back to in-memory state; changing the session key loads that conversation

@@ -22,9 +22,9 @@ widget source because the website consumes its emitted package exports.
 pnpm docs:dev
 ```
 
-Open `http://localhost:4181/ask-widget/`. Documentation is built by Monoline Docs
-independently of Next.js. The `/ask-widget/` base preserves existing GitHub Pages
-URLs. API props are extracted from component source before the documentation build.
+Open `http://localhost:4181/`. Documentation is built by Monoline Docs
+independently of Next.js. The custom docs hostname serves from `/`. API props are
+extracted from component source before the documentation build.
 Restart docs development after changing widget prop declarations to refresh the table.
 
 ## Verify
@@ -51,11 +51,10 @@ Set `NEXT_PUBLIC_SITE_URL` to that production origin; canonical URLs, social URL
 robots and the sitemap use the same value. Vercel previews emit `noindex` and disallow
 crawling. The sitemap omits modification dates until real page revision dates are available.
 
-Monoline Docs deploys to `https://chitranklabs.github.io/ask-widget/`. Its `site`,
-`base` and `seo` configuration control canonical URLs, social metadata, publisher
-identity and the sitemap. Keep this base while existing Pages URLs are in use.
-A project site does not own the host-root `/robots.txt`; its sitemap is under the
-project base. The website's `llms.txt` links to the Docs Markdown exports.
+Monoline Docs deploys to `https://docs.askwidget.chitrankagnihotri.com/` on GitHub
+Pages. Its `site`, `base` and `seo` configuration control canonical URLs, social
+metadata, publisher identity and the sitemap. The root base also emits robots.txt.
+Both the CI deploy and local deploy command preserve the custom-domain CNAME.
 
 Run `pnpm --filter ask-widget-website test:seo` against a production build, or set
 `TEST_BASE_URL` to an existing local server to check its rendered metadata.
@@ -113,3 +112,19 @@ previews do not send analytics. The beacon measures traffic and Core Web Vitals;
 there is no separate Vercel Analytics, Speed Insights or Umami reporter. Keep
 Cloudflare’s automatic script injection off when using this manual integration
 to avoid duplicate beacons. The published widget does not include analytics.
+
+## Documentation analytics and custom domain
+
+Create a separate Cloudflare Web Analytics site for
+`docs.askwidget.chitrankagnihotri.com`. Set its public beacon token as the GitHub
+Actions repository variable `CLOUDFLARE_DOCS_ANALYTICS_TOKEN`. The docs deployment
+passes it to `CLOUDFLARE_WEB_ANALYTICS_TOKEN`; it is not read from Vercel.
+
+The JavaScript config adapter loads the maintained YAML through Monoline Docs and
+adds the native script integration. It does not rewrite generated HTML. Builds
+without the variable contain no beacon; normal local development needs no token.
+
+Configure the custom domain in GitHub Pages before pointing its DNS CNAME to
+`chitranklabs.github.io`. Keep HTTPS enabled and verify old GitHub Pages home,
+deep links and Markdown export redirects after the switch. Do not attach the docs
+hostname to the Vercel website project.

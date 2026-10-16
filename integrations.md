@@ -13,7 +13,7 @@ export default function Assistant() {
 ```
 
 Render `Assistant` from your layout. This example runs demo responses. Connect
-your own endpoint using the [backend guide](/ask-widget/backend). Keep private provider
+your own endpoint using the [backend guide](/backend). Keep private provider
 keys in server-only environment variables.
 
 ## Vite React

@@ -69,7 +69,7 @@ headers in its CORS policy. Do not disable browser security to work around CORS.
 
 ## Custom protocols
 
-Supply a [ChatStreamHandler](/ask-widget/api#chatstreamhandler-type) when your response
+Supply a [ChatStreamHandler](/api#chatstreamhandler-type) when your response
 format differs. It can return text, a promise of text or an async iterable of
 text chunks. Rendered message content is plain text; Markdown rendering is not
 part of the current widget.
