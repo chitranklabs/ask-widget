@@ -16,7 +16,6 @@ import { fetchIdentity } from '@/src/lib/identity';
 import { socialImage } from '@/src/lib/metadata';
 import { siteUrl, isPreviewDeployment } from '@/src/lib/seo';
 
-import '@chitrank2050/ask-widget/styles.css';
 import './globals.css';
 
 export async function generateMetadata(): Promise<Metadata> {

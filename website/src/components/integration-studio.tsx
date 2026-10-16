@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { SectionHead, Button } from '@chitrank2050/monoline-ui';
+import Prism from 'prismjs';
+import { CodeBlock, SegmentedControl } from '@chitrank2050/monoline-ui';
 
 const PKG_MANAGERS = [
   { name: 'pnpm', cmd: 'pnpm add @chitrank2050/ask-widget' },
@@ -13,7 +14,7 @@ const PKG_MANAGERS = [
 const FRAMEWORKS = [
   {
     id: 'next',
-    name: 'Next.js App Router',
+    name: 'Next.js',
     file: 'app/layout.tsx',
     code: `import { ChatWidget } from '@chitrank2050/ask-widget';
 import '@chitrank2050/ask-widget/styles.css';
@@ -38,7 +39,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   },
   {
     id: 'vite',
-    name: 'Vite / React 19',
+    name: 'Vite + React',
     file: 'src/App.tsx',
     code: `import { ChatWidget } from '@chitrank2050/ask-widget';
 import '@chitrank2050/ask-widget/styles.css';
@@ -60,7 +61,7 @@ export function App() {
   },
   {
     id: 'headless',
-    name: 'Headless (useChat)',
+    name: 'Headless',
     file: 'components/InlineTerminalChat.tsx',
     code: `'use client';
 
@@ -92,84 +93,79 @@ export function InlineChat() {
 export function IntegrationStudio() {
   const [selectedPkg, setSelectedPkg] = useState(0);
   const [selectedFramework, setSelectedFramework] = useState(0);
-  const [copied, setCopied] = useState(false);
+  const [copyFeedback, setCopyFeedback] = useState('');
 
   const activeFramework = FRAMEWORKS[selectedFramework];
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(activeFramework.code);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+  async function copy(text: string, source: string) {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopyFeedback(`${source} copied`);
+    } catch {
+      setCopyFeedback('Copy unavailable. Select the code to copy it.');
+    }
+  }
 
   return (
-    <section id="integration" className="mx-auto max-w-5xl px-4 py-16 sm:px-6 lg:py-20">
-      <div className="text-center max-w-2xl mx-auto mb-10">
-        <SectionHead
-          level={2}
-          size="lg"
-          title="Install in under 30 seconds."
-          subtitle="Drop the widget directly into your root layout or mount it headlessly."
-        />
+    <section id="integration" className="shell installation">
+      <div className="install-heading">
+        <div>
+          <span className="intro-label">Integration</span>
+          <h2>Two imports. Your backend.</h2>
+        </div>
+        <p>
+          Install the package and stylesheet.
+          <br />
+          Connect your endpoint when you’re ready.
+        </p>
       </div>
-
       {/* Package Manager Selector Pill Bar */}
-      <div className="flex items-center justify-center gap-2 mb-6">
-        {PKG_MANAGERS.map((pkg, idx) => (
-          <button
-            key={pkg.name}
-            type="button"
-            onClick={() => setSelectedPkg(idx)}
-            className={`rounded-full px-4 py-1.5 font-mono text-xs font-medium transition ${
-              selectedPkg === idx
-                ? 'bg-[var(--primary)] text-[var(--primary-foreground)] shadow-xs'
-                : 'border border-[var(--border)] bg-[var(--surface-2)] text-[var(--text-secondary)] hover:text-[var(--text)]'
-            }`}
-          >
-            {pkg.name}
-          </button>
-        ))}
-      </div>
+      <SegmentedControl
+        className="package-select"
+        size="sm"
+        aria-label="Package manager"
+        options={PKG_MANAGERS.map(pkg => ({ value: pkg.name, label: pkg.name }))}
+        value={PKG_MANAGERS[selectedPkg].name}
+        onChange={value => {
+          setSelectedPkg(PKG_MANAGERS.findIndex(pkg => pkg.name === value));
+          setCopyFeedback('');
+        }}
+      />
 
       {/* Command Pill */}
-      <div className="max-w-xl mx-auto mb-8 flex items-center justify-between rounded-full border border-[var(--border-strong)] bg-[var(--surface-code)] px-5 py-3 font-mono text-xs text-[var(--text)] shadow-xs">
+      <div className="command-row">
         <div className="flex items-center gap-2 overflow-x-auto">
           <span className="text-[var(--status-online)] font-bold">$</span>
           <span>{PKG_MANAGERS[selectedPkg].cmd}</span>
         </div>
         <button
           type="button"
-          onClick={() => {
-            navigator.clipboard.writeText(PKG_MANAGERS[selectedPkg].cmd);
-            setCopied(true);
-            setTimeout(() => setCopied(false), 2000);
-          }}
+          onClick={() => void copy(PKG_MANAGERS[selectedPkg].cmd, 'Command')}
           className="text-[11px] text-[var(--accent)] hover:underline ml-4 whitespace-nowrap"
         >
-          {copied ? '✓ Copied' : 'Copy'}
+          {copyFeedback === 'Command copied' ? 'Copied' : 'Copy'}
         </button>
       </div>
 
       {/* Framework Tabs Code Card */}
-      <div className="overflow-hidden rounded-3xl border border-[var(--border-strong)] bg-[var(--surface-code)] shadow-lg">
+      <CodeBlock
+        className="source-frame"
+        language="tsx"
+        aria-label={`${activeFramework.name} integration example`}
+      >
         {/* Card Header with Framework Selectors */}
-        <div className="flex flex-wrap items-center justify-between border-b border-[var(--border)] px-4 py-2.5 bg-[var(--surface-2)]">
-          <div className="flex items-center gap-1 overflow-x-auto">
-            {FRAMEWORKS.map((fw, idx) => (
-              <button
-                key={fw.id}
-                type="button"
-                onClick={() => setSelectedFramework(idx)}
-                className={`rounded-lg px-3 py-1.5 text-xs font-medium transition ${
-                  selectedFramework === idx
-                    ? 'bg-[var(--surface)] text-[var(--text)] font-semibold shadow-xs'
-                    : 'text-[var(--text-secondary)] hover:text-[var(--text)]'
-                }`}
-              >
-                {fw.name}
-              </button>
-            ))}
-          </div>
+        <div className="source-toolbar">
+          <SegmentedControl
+            className="framework-select"
+            size="sm"
+            aria-label="Code example framework"
+            options={FRAMEWORKS.map(framework => ({ value: framework.id, label: framework.name }))}
+            value={activeFramework.id}
+            onChange={value => {
+              setSelectedFramework(FRAMEWORKS.findIndex(framework => framework.id === value));
+              setCopyFeedback('');
+            }}
+          />
 
           <div className="flex items-center gap-3">
             <span className="font-mono text-[11px] text-[var(--text-muted)] hidden sm:inline">
@@ -177,21 +173,39 @@ export function IntegrationStudio() {
             </span>
             <button
               type="button"
-              onClick={handleCopy}
+              onClick={() => void copy(activeFramework.code, 'Code')}
               className="btn-tactile rounded-md border border-[var(--border)] bg-[var(--surface)] px-2.5 py-1 font-mono text-[11px] text-[var(--text-secondary)] hover:text-[var(--text)]"
             >
-              {copied ? '✓ COPIED' : 'COPY CODE'}
+              {copyFeedback === 'Code copied' ? 'Copied' : 'Copy code'}
             </button>
           </div>
         </div>
 
         {/* Code Content */}
-        <div className="p-5 font-mono text-xs leading-relaxed text-[var(--code-text)] overflow-x-auto">
+        <div
+          tabIndex={0}
+          role="region"
+          aria-label={`${activeFramework.name} code example`}
+          className="p-5 font-mono text-xs leading-relaxed text-[var(--code-text)] overflow-x-auto"
+        >
           <pre>
-            <code>{activeFramework.code}</code>
+            <code
+              data-language="tsx"
+              dangerouslySetInnerHTML={{
+                __html: Prism.highlight(
+                  activeFramework.code,
+                  Prism.languages.javascript,
+                  'javascript',
+                ),
+              }}
+            />
           </pre>
         </div>
-      </div>
+      </CodeBlock>
+      <p className="install-feedback" role="status">
+        {copyFeedback ||
+          'Your backend must handle POST /api/v1/chat in these examples. Keep provider credentials on the server.'}
+      </p>
     </section>
   );
 }

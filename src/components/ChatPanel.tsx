@@ -61,7 +61,7 @@ export default function ChatPanel({
   const panelRef = useRef<HTMLElement | null>(null);
   const followLatest = useRef(true);
   useEffect(() => {
-    panelRef.current?.querySelector('input')?.focus();
+    panelRef.current?.querySelector('input')?.focus({ preventScroll: true });
   }, []);
 
   // Auto-scroll to bottom on new messages or streaming updates
@@ -134,6 +134,8 @@ export default function ChatPanel({
         className="chat-widget__feed"
         ref={feedRef}
         role="log"
+        tabIndex={0}
+        aria-label="Conversation messages"
         aria-live="polite"
         onScroll={event => {
           const node = event.currentTarget;

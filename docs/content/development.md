@@ -79,3 +79,11 @@ that file from a remote response.
 `build:lib` verifies ESM and CommonJS public exports, SSR rendering and both
 stylesheet aliases after emitting the bundle. CommonJS output uses `.cjs` because
 the package is declared as an ES module.
+
+## Website and documentation theme
+
+The website and documentation share `assets/theme.css`. The palette follows the widget’s neutral zinc surfaces. Change semantic colors there to keep both sites consistent in light and dark mode. Website layout and component styling live in `website/src/app/globals.css`; the Docs site loads the shared stylesheet through `docs/monoline-docs.yml`. The published widget has its own theme and can be customized with its `theme` and `colors` props.
+
+The website declares Tailwind’s reset and UI layers before the widget layers in `globals.css`. Keep that order when changing stylesheet imports; host resets must not override the widget’s composer, buttons or message styles.
+
+The website uses Monoline UI for buttons, labeled inputs, segmented selections, theme switching and separators. Keep workbench layout local to the website. Its code examples compose Monoline CodeBlock with explicit Prism highlighting and custom asynchronous clipboard feedback; do not enable Prism’s automatic DOM scanning before React hydration.

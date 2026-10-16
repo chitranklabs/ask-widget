@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@chitrank2050/ask-widget": "workspace:*",
-    "@chitrank2050/monoline-ui": "^0.5.0",
+    "@chitrank2050/monoline-ui": "^0.5.2",
     "@radix-ui/react-slot": "^1.3.3",
     "@tailwindcss/postcss": "^4.3.3",
     "clsx": "^2.1.1",

@@ -23,6 +23,7 @@ allowBuilds:
   '@swc/core': false
 minimumReleaseAgeExclude:
   - '@chitrank2050/monoline-docs@0.3.0'
+  - '@chitrank2050/monoline-ui@0.5.2'
 
 # Patched transitive versions until Markdown tooling updates its dependency ranges.
 overrides:

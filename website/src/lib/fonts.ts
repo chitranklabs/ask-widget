@@ -1,33 +1,9 @@
-import { Geist, Geist_Mono, JetBrains_Mono, Newsreader } from 'next/font/google';
-
-const geistSans = Geist({
+import { Inter, IBM_Plex_Mono } from 'next/font/google';
+const sans = Inter({ subsets: ['latin'], display: 'swap', variable: '--font-sans' });
+const mono = IBM_Plex_Mono({
   subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-sans',
-});
-
-const geistMono = Geist_Mono({
-  subsets: ['latin'],
+  weight: ['400', '500'],
   display: 'swap',
   variable: '--font-mono',
 });
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-code',
-});
-
-const displaySerif = Newsreader({
-  subsets: ['latin'],
-  display: 'swap',
-  style: ['normal', 'italic'],
-  variable: '--font-display-serif',
-});
-
-export const monolineFontClassName = [
-  geistSans.variable,
-  geistMono.variable,
-  jetbrainsMono.variable,
-  displaySerif.variable,
-].join(' ');
+export const monolineFontClassName = [sans.variable, mono.variable].join(' ');

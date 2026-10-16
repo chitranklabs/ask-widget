@@ -13,7 +13,6 @@ type ThemeContextType = {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 const THEME_STORAGE_KEY = 'ask-theme';
-const THEME_TRANSITION_DURATION_MS = 250;
 
 function readDocumentTheme(): Theme {
   return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
@@ -27,7 +26,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const handleSetTheme = (newTheme: Theme) => {
-    document.documentElement.classList.add('theme-transitioning');
     setTheme(newTheme);
     document.documentElement.setAttribute('data-theme', newTheme);
     try {
@@ -35,9 +33,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     } catch {
       // Private browsing or locked storage should not block theme changes.
     }
-    setTimeout(() => {
-      document.documentElement.classList.remove('theme-transitioning');
-    }, THEME_TRANSITION_DURATION_MS);
   };
 
   const toggleTheme = () => {
