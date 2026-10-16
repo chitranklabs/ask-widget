@@ -3,8 +3,7 @@ import type { Metadata } from 'next';
 import { SiteFooter } from '@/src/components/site-footer';
 import { SiteHeader } from '@/src/components/site-header';
 import { ThemeProvider } from '@/src/components/theme-provider';
-import { UmamiAnalytics } from '@/src/components/umami-analytics';
-import { WebVitals } from '@/src/components/web-vitals';
+import { CloudflareAnalytics } from '@/src/components/cloudflare-analytics';
 import {
   JsonLd,
   getPersonJsonLd,
@@ -97,7 +96,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const isProduction = process.env.NODE_ENV === 'production';
   const identity = await fetchIdentity();
 
   return (
@@ -135,8 +133,7 @@ export default async function RootLayout({
             <SiteFooter />
           </div>
         </ThemeProvider>
-        <WebVitals />
-        {isProduction && <UmamiAnalytics />}
+        <CloudflareAnalytics />
       </body>
     </html>
   );

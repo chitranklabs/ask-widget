@@ -101,8 +101,20 @@ Vercel project. The host-specific rule in `website/vercel.json` permanently
 redirects requests from the old hostname to the matching path on the new hostname.
 It does not redirect local development or Vercel preview hostnames.
 
-Set the production `NEXT_PUBLIC_SITE_URL` to the new origin and redeploy. Update
-the website domain in Umami and verify the new property and sitemap in Google
-Search Console. Keep the old hostname’s DNS and TLS working for existing links.
+Set the production `NEXT_PUBLIC_SITE_URL` to the new origin and redeploy. Verify the new property and sitemap in Google Search Console. Keep the old hostname’s DNS and TLS working for existing links.
 The npm package name, repository name and GitHub Pages documentation base remain
 `ask-widget`; they are independent of the website hostname.
+
+## Website analytics
+
+The website uses Cloudflare Web Analytics while hosting stays on Vercel.
+Set `NEXT_PUBLIC_CLOUDFLARE_ANALYTICS_TOKEN` in the Vercel project’s Production
+environment to the public beacon token for `askwidget.chitrankagnihotri.com`, then
+redeploy. No token is stored in source. A missing token disables the integration;
+an invalid token fails the production build with a configuration error.
+
+The script loads after hydration only in production. Local development and Vercel
+previews do not send analytics. The beacon measures traffic and Core Web Vitals;
+there is no separate Vercel Analytics, Speed Insights or Umami reporter. Keep
+Cloudflare’s automatic script injection off when using this manual integration
+to avoid duplicate beacons. The published widget does not include analytics.
