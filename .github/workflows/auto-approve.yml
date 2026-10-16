@@ -99,6 +99,8 @@ jobs:
         with:
           client-id: ${{ secrets.CHITRANK_BOT_CLIENT_ID }}
           private-key: ${{ secrets.CHITRANK_BOT_PRIVATE_KEY }}
+          permission-contents: write
+          permission-pull-requests: write
 
       - name: Verify All Checks & Mergeability 🕵️‍♂️
         if: steps.guard.outputs.should_run == 'true'

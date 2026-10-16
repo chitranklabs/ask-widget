@@ -32,16 +32,14 @@ else
     pnpm install
 fi
 
-# Step 3: Sync identity & pre-build assets
-log_step 3 $TOTAL_STEPS "Syncing identity for website..."
-if [ -f "website/scripts/sync-identity.mjs" ]; then
-    node website/scripts/sync-identity.mjs
-    log_success "Website identity synced."
-fi
+# Step 3: Build the package consumed by the website
+log_step 3 $TOTAL_STEPS "Building library exports..."
+pnpm run build:lib
+log_success "Library exports ready."
 
 # Step 4: Verify
 log_step 4 $TOTAL_STEPS "Verifying installation..."
-if [ -d "node_modules" ] && [ -d "website/node_modules" ]; then
+if [ -d "node_modules" ] && [ -d "website/node_modules" ] && [ -d "docs/node_modules" ]; then
     log_success "Dependencies and workspace links are ready."
 else
     log_error "node_modules folder missing after install."

@@ -11,7 +11,7 @@ function runScript(path) {
   try {
     execFileSync('bash', [resolve(ROOT, path)], { stdio: 'inherit', cwd: ROOT });
   } catch (error) {
-    console.error(pc.red(`\n  ⚠️  Script ${path} failed.\n`));
+    throw new Error(`Script ${path} failed.`, { cause: error });
   }
 }
 
@@ -19,7 +19,7 @@ function runCommand(cmd) {
   try {
     execSync(cmd, { stdio: 'inherit', cwd: ROOT });
   } catch (error) {
-    console.error(pc.red(`\n  ⚠️  Command \`${cmd}\` failed.\n`));
+    throw new Error(`Command \`${cmd}\` failed.`, { cause: error });
   }
 }
 
@@ -35,17 +35,16 @@ const ACTIONS = {
   // Obliviate
   build: () =>
     runCommand(
-      'rm -rf dist dist-app dist-ssr website/.next website/out storybook-static coverage release-artifacts',
+      'rm -rf dist dist-app dist-ssr website/.next website/.next-* website/out docs/dist storybook-static coverage release-artifacts',
     ),
   lockfiles: () => runCommand('rm -f pnpm-lock.yaml package-lock.json yarn.lock bun.lockb'),
-  cache: () => runCommand('rm -rf .eslintcache .turbo website/.turbo'),
-  node_modules: () => runCommand('rm -rf node_modules website/node_modules'),
+  cache: () =>
+    runCommand('rm -rf .eslintcache .turbo website/.turbo *.tsbuildinfo website/*.tsbuildinfo'),
+  node_modules: () => runCommand('rm -rf node_modules website/node_modules docs/node_modules'),
 
   // Git
-  changeset: () => runCommand('pnpm changeset'),
-  tag: () => runScript('scripts/git-tag.sh'),
-  release: () => runScript('scripts/git-release.sh'),
-  publish: () => runCommand('pnpm publish --access public'),
+  release: () => runCommand('gh workflow run release-prepare.yml --ref main'),
+  releases: () => runCommand('gh run list --workflow release-finalize.yml --limit 5'),
 
   // Quality
   lint: () => runCommand('pnpm run lint'),
@@ -62,8 +61,12 @@ async function modeObliviate() {
   const choices = await multiselect({
     message: '🧹 Obliviate - select what to obliterate',
     options: [
-      { value: 'build', label: 'Build artifacts', hint: 'dist/, website/.next, out/' },
-      { value: 'node_modules', label: 'Dependencies', hint: 'root & website node_modules/' },
+      { value: 'build', label: 'Build artifacts', hint: 'library, website and docs output' },
+      {
+        value: 'node_modules',
+        label: 'Dependencies',
+        hint: 'root, website and docs node_modules/',
+      },
       { value: 'lockfiles', label: 'Lockfiles', hint: 'pnpm-lock.yaml…' },
       { value: 'cache', label: 'Internal caches', hint: '.eslintcache, .turbo' },
     ],
@@ -87,18 +90,8 @@ async function modeGit() {
   const choices = await multiselect({
     message: '🐙 Version Control - select actions',
     options: [
-      { value: 'changeset', label: 'Create Changeset', hint: 'Recommended way' },
-      { value: 'tag', label: 'Tag version', hint: 'Automated via CI' },
-      {
-        value: 'release',
-        label: 'GitHub Release',
-        hint: 'Automated via CI',
-      },
-      {
-        value: 'publish',
-        label: '🚀 Publish to NPM',
-        hint: 'Automated via CI',
-      },
+      { value: 'release', label: 'Prepare release PR', hint: 'dispatch main workflow' },
+      { value: 'releases', label: 'Recent release runs', hint: 'GitHub Actions' },
     ],
     required: true,
   });
@@ -179,4 +172,7 @@ async function main() {
   outro(pc.green('Done!'));
 }
 
-main().catch(console.error);
+main().catch(error => {
+  console.error(pc.red(error.message));
+  process.exitCode = 1;
+});

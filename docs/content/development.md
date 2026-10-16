@@ -45,12 +45,6 @@ Do not commit `docs/dist`, package `dist` or website `.next` output.
 The website and documentation have separate deployment targets; docs output is
 never mounted into the Next.js application.
 
-## Shared site theme
-
-The website and documentation load `assets/theme.css` for their light and dark
-color tokens. Edit this file to keep both sites consistent. Website layout styles
-remain in `website/src/app/globals.css`; the Docs layout is managed by Monoline Docs.
-
 ## SEO and deployment
 
 The website is deployed independently to `https://ask-widget.chitrankagnihotri.com`.
@@ -86,4 +80,15 @@ The website and documentation share `assets/theme.css`. The palette follows the 
 
 The website declares Tailwind’s reset and UI layers before the widget layers in `globals.css`. Keep that order when changing stylesheet imports; host resets must not override the widget’s composer, buttons or message styles.
 
-The website uses Monoline UI for buttons, labeled inputs, segmented selections, theme switching and separators. Keep workbench layout local to the website. Its code examples compose Monoline CodeBlock with explicit Prism highlighting and custom asynchronous clipboard feedback; do not enable Prism’s automatic DOM scanning before React hydration.
+The website uses Monoline UI for buttons, labeled inputs, segmented selections, navigation, footer, theme switching and separators. Keep workbench layout local to the website. Its code examples compose Monoline CodeBlock with explicit Prism highlighting and custom asynchronous clipboard feedback; do not enable Prism’s automatic DOM scanning before React hydration.
+
+## Repository cleanup
+
+Run `pnpm obliviate` to select build output, dependencies, caches or lockfiles.
+Build and dependency cleanup covers the library, website and docs workspaces.
+Lockfile deletion is a separate, explicit choice because it resolves the dependency
+graph again on the next install. Do not clean output while its preview is running.
+The menu propagates failed commands as a nonzero exit status.
+
+Use `pnpm git` to prepare a release PR through GitHub Actions or inspect recent
+release runs. Publishing and recovery follow the maintenance guide.

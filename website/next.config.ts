@@ -26,14 +26,7 @@ const nextConfig: NextConfig = {
   compress: true,
   experimental: {
     webpackMemoryOptimizations: true,
-    optimizePackageImports: [
-      '@chitrank2050/monoline-ui',
-      '@chitrank2050/ask-widget',
-      '@radix-ui/react-slot',
-      'prismjs',
-      'clsx',
-      'tailwind-merge',
-    ],
+    optimizePackageImports: ['@chitrank2050/monoline-ui', '@chitrank2050/ask-widget', 'prismjs'],
   },
 };
 

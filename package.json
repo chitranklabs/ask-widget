@@ -74,7 +74,7 @@
     "lint:md": "markdownlint --fix \"**/*.md\" --ignore node_modules",
     "format": "prettier --write \"**/*.{ts,tsx,js,mjs,json,md,css}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,mjs,json,md,css}\"",
-    "typecheck": "node node_modules/@typescript/native/bin/tsc --noEmit",
+    "typecheck": "node node_modules/@typescript/native/bin/tsc --noEmit -p tsconfig.app.json && node node_modules/@typescript/native/bin/tsc --noEmit -p tsconfig.node.json && node node_modules/@typescript/native/bin/tsc --noEmit -p tsconfig.test.json",
     "deps:update": "pnpm update --interactive --latest"
   },
   "peerDependencies": {

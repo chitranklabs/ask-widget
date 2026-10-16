@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -euo pipefail
 
 # Hardened Owner Guard: Verifies active GitHub CLI session identity
 GH_USER=$(gh api user --jq '.login' 2>/dev/null || echo "anonymous")
@@ -11,6 +11,7 @@ fi
 # Source the logger utility
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/utils/logger.sh"
+cd "$SCRIPT_DIR/.."
 
 log_header "📖 ask-widget Docs Deployment"
 

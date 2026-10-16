@@ -9,7 +9,8 @@ Thanks for your interest in contributing to ask-widget.
 ```bash
 git clone https://github.com/chitranklabs/ask-widget.git
 cd ask-widget
-pnpm install
+pnpm install --frozen-lockfile
+pnpm build:lib
 pnpm dev
 ```
 
@@ -54,13 +55,8 @@ docs: add usage examples to README
 - Scoped Vanilla CSS - no global style pollution
 - Google-style JSDoc on all exported functions and components
 
-### Storybook
-
-Develop new components in isolation:
-
-```bash
-pnpm storybook
-```
+Use the website’s interactive preview to check widget changes. Rebuild the library
+after editing package source; the website consumes its emitted exports.
 
 ```bash
 pnpm lint

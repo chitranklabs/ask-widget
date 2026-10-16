@@ -45,6 +45,9 @@ jobs:
         with:
           client-id: ${{ secrets.CHITRANK_BOT_CLIENT_ID }}
           private-key: ${{ secrets.CHITRANK_BOT_PRIVATE_KEY }}
+          permission-contents: read
+          permission-pull-requests: write
+          permission-issues: write
 
       - name: Generate Categorized Summary 📝
         id: cliff

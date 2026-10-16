@@ -22,6 +22,18 @@ inputs:
   private-key:
     description: 'The GitHub App Private Key'
     required: true
+  permission-contents:
+    description: Repository contents permission
+    required: true
+  permission-pull-requests:
+    description: Pull request permission
+    required: false
+  permission-issues:
+    description: Issue permission for labels and assignees
+    required: false
+  permission-workflows:
+    description: Workflow permission when creating release tags
+    required: false
 outputs:
   token:
     description: 'The generated GitHub App token'
@@ -29,7 +41,6 @@ outputs:
 runs:
   using: 'composite'
   steps:
-    # zizmor: ignore[github-app]
     - name: Create Bot Token 🤖🔑
       id: generate_token
       uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
@@ -37,3 +48,7 @@ runs:
         client-id: ${{ inputs.client-id }}
         private-key: ${{ inputs.private-key }}
         repositories: ${{ github.event.repository.name }}
+        permission-contents: ${{ inputs.permission-contents }}
+        permission-pull-requests: ${{ inputs.permission-pull-requests }}
+        permission-issues: ${{ inputs.permission-issues }}
+        permission-workflows: ${{ inputs.permission-workflows }}
