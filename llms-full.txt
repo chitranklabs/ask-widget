@@ -244,6 +244,9 @@ Restart docs development after changing widget prop declarations to refresh the 
 
 ## Verify
 
+The workflow regression tests require Bash and `jq` on your PATH, matching the
+GitHub-hosted Ubuntu runner. Install them before running `pnpm test` locally.
+
 ```bash
 pnpm test
 pnpm typecheck
@@ -311,8 +314,9 @@ redirects requests from the old hostname to the matching path on the new hostnam
 It does not redirect local development or Vercel preview hostnames.
 
 Set the production `NEXT_PUBLIC_SITE_URL` to the new origin and redeploy. Verify the new property and sitemap in Google Search Console. Keep the old hostname’s DNS and TLS working for existing links.
-The npm package name, repository name and GitHub Pages documentation base remain
-`ask-widget`; they are independent of the website hostname.
+The npm package and repository names remain `ask-widget`. Documentation uses its
+own custom hostname with `/` as its base; these settings are independent of the
+website hostname.
 
 ## Website analytics
 
@@ -447,16 +451,23 @@ const {
 Handles the SSE connection, fetch headers, and token parsing from compatible SSE APIs.
 
 ```tsx
-import { useSSEStream } from '@chitrank2050/ask-widget'
+import { useChat, useSSEStream } from '@chitrank2050/ask-widget';
 
-const { streamResponse } = useSSEStream({
-  apiUrl: "https://my-api.com",
-  path: "/v1/chat",
-  // also takes customizable body builders and chunk extractors
-})
+function CustomChat() {
+  const { streamResponse } = useSSEStream({
+    apiUrl: 'https://my-api.com',
+    path: '/v1/chat',
+    // Also accepts custom body builders and chunk extractors.
+  });
+  const { messages, sendMessage, isStreaming } = useChat({ streamResponse });
 
-<MyCustomUI onSend={(msg) => streamResponse(msg, history)} />
+  return <MyCustomUI messages={messages} onSend={sendMessage} disabled={isStreaming} />;
+}
 ```
+
+`MyCustomUI` represents your own interface. `useChat` supplies message history
+and consumes the adapter’s async iterable; merely calling `streamResponse` does
+not start a request.
 
 ## `useSession`
 

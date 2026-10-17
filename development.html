@@ -22,6 +22,8 @@ independently of Next.js. The custom docs hostname serves from <code>/</code>. A
 extracted from component source before the documentation build.
 Restart docs development after changing widget prop declarations to refresh the table.</p>
 <h2 id="verify">Verify<a class="heading-anchor" href="#verify" aria-label="Link to Verify"><svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" focusable="false"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-2 2M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l2-2"></path></svg></a></h2>
+<p>The workflow regression tests require Bash and <code>jq</code> on your PATH, matching the
+GitHub-hosted Ubuntu runner. Install them before running <code>pnpm test</code> locally.</p>
 <div class="code-block"><pre class="language-bash" data-language="bash" tabindex="0"><code class="language-bash"><span class="docs-code-line" data-line="1"><span class="token function">pnpm</span> <span class="token builtin class-name">test</span></span>
 <span class="docs-code-line" data-line="2"><span class="token function">pnpm</span> typecheck</span>
 <span class="docs-code-line" data-line="3"><span class="token function">pnpm</span> build:lib</span>
@@ -69,8 +71,9 @@ Vercel project. The host-specific rule in <code>website/vercel.json</code> perma
 redirects requests from the old hostname to the matching path on the new hostname.
 It does not redirect local development or Vercel preview hostnames.</p>
 <p>Set the production <code>NEXT_PUBLIC_SITE_URL</code> to the new origin and redeploy. Verify the new property and sitemap in Google Search Console. Keep the old hostname’s DNS and TLS working for existing links.
-The npm package name, repository name and GitHub Pages documentation base remain
-<code>ask-widget</code>; they are independent of the website hostname.</p>
+The npm package and repository names remain <code>ask-widget</code>. Documentation uses its
+own custom hostname with <code>/</code> as its base; these settings are independent of the
+website hostname.</p>
 <h2 id="website-analytics">Website analytics<a class="heading-anchor" href="#website-analytics" aria-label="Link to Website analytics"><svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" focusable="false"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-2 2M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l2-2"></path></svg></a></h2>
 <p>The website uses Cloudflare Web Analytics while hosting stays on Vercel.
 Set <code>NEXT_PUBLIC_CLOUDFLARE_ANALYTICS_TOKEN</code> in the Vercel project’s Production
