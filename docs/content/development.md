@@ -34,6 +34,9 @@ Restart docs development after changing widget prop declarations to refresh the 
 
 ## Verify
 
+The workflow regression tests require Bash and `jq` on your PATH, matching the
+GitHub-hosted Ubuntu runner. Install them before running `pnpm test` locally.
+
 ```bash
 pnpm test
 pnpm typecheck
@@ -101,8 +104,9 @@ redirects requests from the old hostname to the matching path on the new hostnam
 It does not redirect local development or Vercel preview hostnames.
 
 Set the production `NEXT_PUBLIC_SITE_URL` to the new origin and redeploy. Verify the new property and sitemap in Google Search Console. Keep the old hostname’s DNS and TLS working for existing links.
-The npm package name, repository name and GitHub Pages documentation base remain
-`ask-widget`; they are independent of the website hostname.
+The npm package and repository names remain `ask-widget`. Documentation uses its
+own custom hostname with `/` as its base; these settings are independent of the
+website hostname.
 
 ## Website analytics
 

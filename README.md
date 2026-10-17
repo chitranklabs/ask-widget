@@ -109,6 +109,7 @@ We use **pnpm** and **Lefthook** for a high-performance developer workflow.
 # Install and setup
 pnpm install
 pnpm exec lefthook install
+pnpm build:lib
 
 # Run dev server
 pnpm dev

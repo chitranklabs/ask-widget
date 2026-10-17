@@ -35,16 +35,23 @@ const {
 Handles the SSE connection, fetch headers, and token parsing from compatible SSE APIs.
 
 ```tsx
-import { useSSEStream } from '@chitrank2050/ask-widget'
+import { useChat, useSSEStream } from '@chitrank2050/ask-widget';
 
-const { streamResponse } = useSSEStream({
-  apiUrl: "https://my-api.com",
-  path: "/v1/chat",
-  // also takes customizable body builders and chunk extractors
-})
+function CustomChat() {
+  const { streamResponse } = useSSEStream({
+    apiUrl: 'https://my-api.com',
+    path: '/v1/chat',
+    // Also accepts custom body builders and chunk extractors.
+  });
+  const { messages, sendMessage, isStreaming } = useChat({ streamResponse });
 
-<MyCustomUI onSend={(msg) => streamResponse(msg, history)} />
+  return <MyCustomUI messages={messages} onSend={sendMessage} disabled={isStreaming} />;
+}
 ```
+
+`MyCustomUI` represents your own interface. `useChat` supplies message history
+and consumes the adapter’s async iterable; merely calling `streamResponse` does
+not start a request.
 
 ## `useSession`
 

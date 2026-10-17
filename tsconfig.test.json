@@ -5,6 +5,6 @@
     "lib": ["ES2023", "DOM", "DOM.Iterable"],
     "types": ["node", "vite/client", "vitest/globals", "@testing-library/jest-dom/vitest"]
   },
-  "include": ["tests", "src"],
+  "include": ["tests", "src", "website/src/components/cloudflare-analytics.tsx"],
   "exclude": []
 }

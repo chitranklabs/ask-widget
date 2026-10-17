@@ -146,6 +146,7 @@ jobs:
           HAS_DEPS: ${{ needs.changes.outputs.deps }}
           HAS_WEBSITE: ${{ needs.changes.outputs.website }}
           HAS_DOCS: ${{ needs.changes.outputs.docs }}
+          HAS_WORKFLOWS: ${{ needs.changes.outputs.workflows }}
           HAS_LINT: ${{ needs.changes.outputs.lint }}
         run: |
           echo "::group::Starting Parallel Checks"
@@ -159,7 +160,7 @@ jobs:
             (pnpm run docs:build > .ci-status/docs.log 2>&1 || echo "1" > .ci-status/docs.fail) &
           fi
 
-          if [ "$HAS_SRC" == "true" ] || [ "$HAS_DEPS" == "true" ]; then
+          if [ "$HAS_SRC" == "true" ] || [ "$HAS_DEPS" == "true" ] || [ "$HAS_WEBSITE" == "true" ] || [ "$HAS_DOCS" == "true" ] || [ "$HAS_WORKFLOWS" == "true" ]; then
             (pnpm run test:coverage > .ci-status/test.log 2>&1 || echo "1" > .ci-status/test.fail) &
           fi
 
