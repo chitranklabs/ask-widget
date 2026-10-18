@@ -6,6 +6,9 @@ Thanks for your interest in contributing to ask-widget.
 
 ## Getting Started
 
+Use Node.js 24.14 or newer and the pnpm version pinned in `package.json`.
+The root is the published package; `website/` and `docs/` are separate consumers.
+
 ```bash
 git clone https://github.com/chitranklabs/ask-widget.git
 cd ask-widget
@@ -19,7 +22,7 @@ pnpm dev
 ## Workflow
 
 1. [Open an issue](https://github.com/chitranklabs/ask-widget/issues/new/choose) before starting work
-2. Fork the repo and create a branch: `git checkout -b 42-fix-sse-reconnect`
+2. Fork the repo and create a branch: `git checkout -b fix/sse-cancellation`
 3. Make your changes
 4. Describe the change and validation in your PR; releases use git-hygiene and git-cliff
 5. Run `pnpm build` - must pass before opening a PR
@@ -42,7 +45,7 @@ Follow conventional commits:
 
 ```text
 feat: add configurable position prop
-fix: resolve SSE reconnect on mobile
+fix: cancel a pending response on mobile
 chore: update dependencies
 docs: add usage examples to README
 ```

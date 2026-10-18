@@ -3,7 +3,15 @@ title: Install the React chat widget
 description: Install ask-widget, add its stylesheet and connect a React chat interface to your own streaming backend.
 ---
 
-**ask-widget** is a lightweight React component for adding a streaming AI chat assistant to your developer portfolio. It’s strictly monochrome by default and designed to align with the popular "zinc/neutral" aesthetic.
+Render the widget with scripted demo responses first, then connect your own
+streaming backend. The widget provides the interface; your server supplies model
+access and authentication.
+
+## Requirements
+
+- React and React DOM 18 or newer.
+- Node.js 24 or newer, as declared by the published package.
+- A React application; Next.js App Router needs a client component boundary.
 
 ## Installation
 
@@ -28,31 +36,35 @@ styled widget examples below.
 
 ## Basic Usage
 
-To use the widget, render it at the root of your application (or any top-level layout).
+Start with a working demo that needs no backend. Render the widget in your
+application; this example includes the client boundary required by Next.js.
 
 ```tsx
+'use client';
+
 import { ChatWidget } from '@chitrank2050/ask-widget';
 import '@chitrank2050/ask-widget/styles.css';
 
 export default function App() {
   return (
     <main>
-      <ChatWidget
-        apiUrl="https://your-api.example.com"
-        position="bottom-right"
-        theme="dark"
-        title="Ask Anything"
-      />
+      <ChatWidget position="bottom-right" theme="dark" title="Ask Anything" />
     </main>
   );
 }
 ```
 
-## Prerequisites
+<a id="prerequisites"></a>
 
-To enable real chat streaming, you'll need an API that supports Server-Sent Events (SSE). By default, `ask-widget` expects an OpenAI-compatible endpoint at `/v1/chat` that accepts a `POST` request with a `messages` array in the body.
+## Connect a backend
 
-If you don't have a backend ready yet, the widget will automatically run in **demo mode** (interactive mocked responses).
+The example above omits `apiUrl` and `streamResponse`, so it uses built-in
+**scripted demo responses**, not a model. A nonempty `apiUrl` selects the SSE
+adapter; an unavailable backend produces an error rather than falling back to demo.
+
+Follow [Backend and SSE](backend.md) for the request/response contract and a local
+Next.js route example. The default adapter appends `/v1/chat` to `apiUrl`; for a
+same-origin `/api/chat` route, use the explicit hook setup in that guide.
 
 ## Authentication
 

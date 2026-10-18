@@ -76,6 +76,14 @@ that file from a remote response.
 stylesheet aliases after emitting the bundle. CommonJS output uses `.cjs` because
 the package is declared as an ES module.
 
+## Package build tooling
+
+The library build uses Vite, the React plugin and generated TypeScript declarations.
+Its configuration lives in `vite.config.lib.ts`; React stays external to the bundle.
+CSS uses cascade layers and theme tokens. Test styling in the consumer website
+because a host application can still override widget styles. Build tools and
+transformation speed are not consumer runtime guarantees.
+
 ## Website and documentation theme
 
 The website and documentation share `assets/theme.css`. The palette follows the widget’s neutral zinc surfaces. Change semantic colors there to keep both sites consistent in light and dark mode. Website layout and component styling live in `website/src/app/globals.css`; the Docs site loads the shared stylesheet through `docs/monoline-docs.yml`. The published widget has its own theme and can be customized with its `theme` and `colors` props.

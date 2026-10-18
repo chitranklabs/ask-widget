@@ -41,6 +41,55 @@ default request body uses that history without duplicating the prompt. A standal
 adapter call can supply prior history; the adapter appends the prompt unless it is
 already the last user message.
 
+## Verify a local Next.js route
+
+Use the `Assistant` component above with this `app/api/chat/route.ts` handler.
+This is a scripted transport example, not an AI provider integration. It lets you
+verify the URL, request body and SSE framing before adding external services.
+
+```ts
+export async function POST(request: Request) {
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    return new Response('Expected JSON', { status: 400 });
+  }
+  if (!body || typeof body !== 'object' || !('messages' in body) || !Array.isArray(body.messages)) {
+    return new Response('Expected a messages array', { status: 400 });
+  }
+
+  const frames = ['Hello', ' from your local route.'].map(
+    chunk => `data: ${JSON.stringify({ choices: [{ delta: { content: chunk } }] })}\n\n`,
+  );
+  return new Response(frames.join('') + 'data: [DONE]\n\n', {
+    headers: {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+    },
+  });
+}
+```
+
+Start your Next.js app and send a widget message. You should see
+**Hello from your local route.** The network panel should show a successful
+`POST /api/chat`. This small fixture returns its frames together; a real backend
+can send the same frames incrementally as a provider produces tokens.
+
+The default adapter sends this JSON shape:
+
+```json
+{
+  "messages": [{ "role": "user", "content": "Hello" }],
+  "stream": true
+}
+```
+
+Before replacing the scripted text with a provider call, add your application's
+authentication, request validation and limits on the server. Forward cancellation
+to that call, keep credentials server-side, and return only the response protocol
+your adapter expects. The widget does not implement those server policies.
+
 ## Cancel a response
 
 Closing the panel, pressing Escape or resetting the conversation cancels the active

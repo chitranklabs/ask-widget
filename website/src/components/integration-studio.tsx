@@ -19,7 +19,7 @@ const FRAMEWORKS = [
     code: `import { ChatWidget } from '@chitrank2050/ask-widget';
 import '@chitrank2050/ask-widget/styles.css';
 
-// Your backend must handle POST /api/v1/chat.
+// No backend needed: this renders scripted demo responses.
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
@@ -28,7 +28,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ChatWidget
           title="Portfolio AI"
           placeholder="Ask about my projects & stack..."
-          apiUrl="/api"
           theme="dark"
           position="bottom-right"
         />
@@ -44,7 +43,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     code: `import { ChatWidget } from '@chitrank2050/ask-widget';
 import '@chitrank2050/ask-widget/styles.css';
 
-// Your backend must handle POST /api/v1/chat.
+// No backend needed: this renders scripted demo responses.
 export function App() {
   return (
     <main className="portfolio">
@@ -53,7 +52,6 @@ export function App() {
         title="Ask Me"
         theme="dark"
         position="bottom-right"
-        apiUrl="/api"
       />
     </main>
   );
@@ -67,9 +65,10 @@ export function App() {
 
 import { useChat, type ChatStreamHandler } from '@chitrank2050/ask-widget';
 
-const streamResponse: ChatStreamHandler = async (message, history) => {
+const streamResponse: ChatStreamHandler = async (message, history, context) => {
   const response = await fetch('/api/chat', {
     method: 'POST',
+    signal: context?.signal,
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ message, history }),
   });
@@ -116,7 +115,7 @@ export function IntegrationStudio() {
         <p>
           Install the package and stylesheet.
           <br />
-          Connect your endpoint when you’re ready.
+          Start with scripted demo responses, then connect your endpoint.
         </p>
       </div>
       {/* Package Manager Selector Pill Bar */}
