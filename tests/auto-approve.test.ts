@@ -1,5 +1,7 @@
 import { spawnSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 const workflow = readFileSync('.github/workflows/auto-approve.yml', 'utf8');
@@ -8,11 +10,16 @@ const script = verificationStep?.split('        run: |\n')[1]?.replace(/^ {10}/g
 if (!script) throw new Error('Auto-approval verification step not found');
 
 function verify(checks: object[], mergeable = 'MERGEABLE', nextChecks?: object[]) {
-  return spawnSync(
-    'bash',
-    [
-      '-c',
-      `gh() {
+  // Match runner output files; reopening a captured stdout pipe fails on Linux.
+  const directory = mkdtempSync(join(tmpdir(), 'auto-approve-'));
+  const outputPath = join(directory, 'github-output');
+  writeFileSync(outputPath, '');
+  try {
+    const result = spawnSync(
+      'bash',
+      [
+        '-c',
+        `gh() {
   if [ "$FIXTURE_INDEX" -gt 0 ] && [ -n "$PR_NEXT_FIXTURE" ]; then
     printf '%s' "$PR_NEXT_FIXTURE"
   else
@@ -22,21 +29,25 @@ function verify(checks: object[], mergeable = 'MERGEABLE', nextChecks?: object[]
 sleep() { echo mock-sleep; FIXTURE_INDEX=$((FIXTURE_INDEX + 1)); }
 FIXTURE_INDEX=0
 ${script}`,
-    ],
-    {
-      env: {
-        ...process.env,
-        PR_FIXTURE: JSON.stringify({ mergeable, statusCheckRollup: checks }),
-        PR_NEXT_FIXTURE: nextChecks
-          ? JSON.stringify({ mergeable, statusCheckRollup: nextChecks })
-          : '',
-        PR_NUMBER: '123',
-        GITHUB_REPOSITORY: 'example/repo',
-        GITHUB_OUTPUT: '/dev/stdout',
+      ],
+      {
+        env: {
+          ...process.env,
+          PR_FIXTURE: JSON.stringify({ mergeable, statusCheckRollup: checks }),
+          PR_NEXT_FIXTURE: nextChecks
+            ? JSON.stringify({ mergeable, statusCheckRollup: nextChecks })
+            : '',
+          PR_NUMBER: '123',
+          GITHUB_REPOSITORY: 'example/repo',
+          GITHUB_OUTPUT: outputPath,
+        },
+        encoding: 'utf8',
       },
-      encoding: 'utf8',
-    },
-  );
+    );
+    return { ...result, githubOutput: readFileSync(outputPath, 'utf8') };
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
 }
 
 describe('auto-approval check gate', () => {
@@ -47,8 +58,8 @@ describe('auto-approval check gate', () => {
     ]) {
       const result = verify([check]);
       expect(result.status).toBe(0);
-      expect(result.stdout).toContain('ready=false');
-      expect(result.stdout).not.toContain('ready=true');
+      expect(result.githubOutput).toContain('ready=false');
+      expect(result.githubOutput).not.toContain('ready=true');
       expect(result.stdout.match(/mock-sleep/g)).toHaveLength(17);
     }
   });
@@ -62,7 +73,7 @@ describe('auto-approval check gate', () => {
       const result = verify([check]);
       expect(result.status).toBe(1);
       expect(result.stdout).not.toContain('mock-sleep');
-      expect(result.stdout).not.toContain('ready=true');
+      expect(result.githubOutput).not.toContain('ready=true');
     }
   });
 
@@ -74,7 +85,7 @@ describe('auto-approval check gate', () => {
       { name: 'Auto-Approve', status: 'IN_PROGRESS', conclusion: '' },
     ]);
     expect(result.status).toBe(0);
-    expect(result.stdout).toContain('ready=true');
+    expect(result.githubOutput).toContain('ready=true');
     expect(workflow).toContain("if: steps.verify.outputs.ready == 'true'");
   });
 
@@ -83,7 +94,7 @@ describe('auto-approval check gate', () => {
       { name: 'Deploy', status: 'COMPLETED', conclusion: 'SUCCESS' },
     ]);
     expect(result.status).toBe(0);
-    expect(result.stdout).toContain('ready=true');
+    expect(result.githubOutput).toContain('ready=true');
     expect(result.stdout.match(/mock-sleep/g)).toHaveLength(1);
   });
 
@@ -92,14 +103,14 @@ describe('auto-approval check gate', () => {
       { name: 'Deploy', status: 'COMPLETED', conclusion: 'FAILURE' },
     ]);
     expect(result.status).toBe(1);
-    expect(result.stdout).not.toContain('ready=true');
+    expect(result.githubOutput).not.toContain('ready=true');
     expect(result.stdout.match(/mock-sleep/g)).toHaveLength(1);
   });
 
   it('defers unknown mergeability and rejects conflicts', () => {
     const pending = verify([], 'UNKNOWN');
     expect(pending.status).toBe(0);
-    expect(pending.stdout).not.toContain('ready=true');
+    expect(pending.githubOutput).not.toContain('ready=true');
     expect(verify([], 'CONFLICTING').status).toBe(1);
   });
 });

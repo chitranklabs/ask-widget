@@ -45,16 +45,6 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Create Bot Token 🤖🔑
-        id: generate_token
-        uses: $/.github/actions/setup-bot
-        with:
-          client-id: ${{ secrets.CHITRANK_BOT_CLIENT_ID }}
-          private-key: ${{ secrets.CHITRANK_BOT_PRIVATE_KEY }}
-          permission-contents: write
-          permission-pull-requests: write
-          permission-issues: write
-
       - name: Install pnpm 📦
         uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
 
@@ -90,6 +80,17 @@ jobs:
           curl -L https://github.com/google/osv-scanner/releases/download/v2.3.5/osv-scanner_linux_amd64 -o osv-scanner
           chmod +x osv-scanner
           ./osv-scanner --lockfile=pnpm-lock.yaml
+
+      # App-authored PRs must trigger their own CI checks.
+      - name: Create Bot Token 🤖🔑
+        if: steps.check.outputs.has_overrides == 'true'
+        id: generate_token
+        uses: $/.github/actions/setup-bot
+        with:
+          client-id: ${{ secrets.CHITRANK_BOT_CLIENT_ID }}
+          private-key: ${{ secrets.CHITRANK_BOT_PRIVATE_KEY }}
+          permission-contents: write
+          permission-pull-requests: write
 
       - name: Create Pull Request if redundant 🚀
         if: steps.check.outputs.has_overrides == 'true'

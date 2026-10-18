@@ -41,6 +41,22 @@ checks both version files. Do not edit a released version or move a published ta
 make a new release for source changes. Publishing still requires npm credentials
 or its configured trusted publisher, and the JSR repository/OIDC association.
 
+## Automation credentials
+
+PR labeling uses the bot App with Contents read and Pull requests write
+permissions, matching the other project repositories. It does not request a
+separate Issues grant. Weekly maintenance uses the bot App only when it needs
+to open a PR, so that PR can trigger CI; it needs Contents and Pull requests
+write permissions. If token creation reports that requested permissions
+are not granted, check the App's configured permissions and the installation's
+accepted grants for this repository. Repeated retries cannot add missing grants.
+
+A package build also compiles a TypeScript consumer through the package's public
+export map. This checks the declaration entry as well as runtime exports. Do not
+publish an old `dist/` directory: build from the verified release source before
+packing. Already published versions cannot be repaired in place; release a new
+version when their artifact is defective.
+
 ## Verify locally
 
 ```bash
