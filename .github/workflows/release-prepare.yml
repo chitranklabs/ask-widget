@@ -65,7 +65,6 @@ jobs:
           private-key: ${{ secrets.CHITRANK_BOT_PRIVATE_KEY }}
           permission-contents: write
           permission-pull-requests: write
-          permission-issues: write
 
       - name: Configure Authenticated Git 🔧
         env:
