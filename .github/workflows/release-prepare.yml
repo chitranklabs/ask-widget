@@ -112,8 +112,16 @@ jobs:
           CLEAN_VERSION: ${{ steps.vars.outputs.clean_version }}
         run: |
           echo "Bumping package.json to $CLEAN_VERSION"
-          jq ".version = \"$CLEAN_VERSION\"" package.json > package.json.tmp && mv package.json.tmp package.json
-          jq ".version = \"$CLEAN_VERSION\"" jsr.json > jsr.json.tmp && mv jsr.json.tmp jsr.json
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import { readFileSync, writeFileSync } from 'node:fs';
+          for (const file of ['package.json', 'jsr.json']) {
+            const source = readFileSync(file, 'utf8');
+            const updated = source.replace(/^(\s*"version"\s*:\s*)"[^"\n]*"/m, (_, prefix) => prefix + JSON.stringify(process.env.CLEAN_VERSION));
+            assert.equal(JSON.parse(updated).version, process.env.CLEAN_VERSION, `Version update failed: ${file}`);
+            writeFileSync(file, updated);
+          }
+          NODE
 
       - name: Update CHANGELOG.md 📝
         uses: orhun/git-cliff-action@a9a95522b26fe6403f7bb24031f21fb573d0f5ff # v4.9.1

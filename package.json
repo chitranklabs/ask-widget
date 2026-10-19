@@ -135,6 +135,7 @@
       "ci",
       "revert",
       "maintenance",
+      "release",
       "renovate"
     ]
   }
