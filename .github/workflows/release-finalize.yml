@@ -231,13 +231,13 @@ jobs:
           client-id: ${{ secrets.CHITRANK_BOT_CLIENT_ID }}
           private-key: ${{ secrets.CHITRANK_BOT_PRIVATE_KEY }}
           permission-contents: write
-      - name: Generate release notes
-        uses: orhun/git-cliff-action@f50e11560dce63f7c33227798f90b924471a88b5
-        with:
-          config: cliff.toml
-          args: --current --strip all --output release-notes.md
+      - name: Generate release notes from the reviewed changelog
         env:
-          GITHUB_TOKEN: ${{ steps.bot.outputs.token }}
+          RELEASE_TAG: ${{ needs.build.outputs.tag_name }}
+          RELEASE_TOOLING_SHA: ${{ github.workflow_sha }}
+        run: |
+          git show "$RELEASE_TOOLING_SHA:scripts/release-notes.mjs" > "$RUNNER_TEMP/release-notes.mjs"
+          node "$RUNNER_TEMP/release-notes.mjs" --tag "$RELEASE_TAG" --output release-notes.md
       - name: Create release if missing
         env:
           GH_TOKEN: ${{ steps.bot.outputs.token }}

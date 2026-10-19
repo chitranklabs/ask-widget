@@ -83,6 +83,7 @@ jobs:
               - 'tests/**'
               - 'vitest.config.ts'
               - 'scripts/verify-package.mjs'
+              - 'scripts/release-notes.mjs'
               - 'index.html'
               - 'vite.config*.ts'
               - 'public/**'

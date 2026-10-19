@@ -19,7 +19,10 @@ fails explicitly; it is never overwritten.
 
 npm, JSR and the GitHub release run independently against the verified source
 commit. npm publishes only the root library, with provenance. JSR publishes its
-source package using OIDC. GitHub release notes come from git-cliff for that tag.
+source package using OIDC. GitHub release notes come from the exact version section in the tagged
+`CHANGELOG.md`. The release PR generates that changelog with git-cliff; publication
+does not regenerate its content from a different commit range. Missing or empty
+version sections fail explicitly.
 Documentation deployment remains a separate main-branch workflow.
 
 ## Recover a failed destination
@@ -73,3 +76,26 @@ publishes a clean, verified source checkout.
 
 Operational configuration lives in `.github/workflows/`, the bot action in
 `.github/actions/setup-bot/`, `lefthook.yml` and `cliff.toml`.
+
+## Correct release notes only
+
+From an up-to-date main checkout, fetch the tags and generate notes for the
+existing release:
+
+```bash
+git fetch origin --tags
+node scripts/release-notes.mjs --tag v<version> --output /tmp/ask-widget-release-notes.md
+```
+
+Review the generated file, then update only the GitHub release description:
+
+```bash
+gh release edit v<version> --repo chitranklabs/ask-widget --notes-file /tmp/ask-widget-release-notes.md
+```
+
+The generator reads the package manifest and changelog from the requested tag,
+not the working tree. It includes the versioned install command, runtime
+requirements and documentation links, and normalizes legacy commit links in the
+output. It never changes the tagged files. This operation does not move tags,
+replace release assets or republish npm/JSR packages. Existing releases remain
+untouched during ordinary recovery; description repair is an explicit operation.
