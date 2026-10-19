@@ -2,7 +2,7 @@
   "name": "@chitrank2050/ask-widget",
   "description": "A lightweight chat widget for developer portfolios. Drop-in floating chat with SSE streaming, dark/light themes, and configurable positioning.",
   "private": false,
-  "version": "0.6.1",
+  "version": "0.7.0",
   "type": "module",
   "homepage": "https://askwidget.chitrankagnihotri.com",
   "author": {
