@@ -26,7 +26,3 @@ minimumReleaseAgeExclude:
   - '@chitrank2050/monoline-ui@0.5.2'
 
 # Patched transitive versions until Markdown tooling updates its dependency ranges.
-overrides:
-  'markdownlint-cli>js-yaml': '^5.4.1'
-  'markdownlint-cli>smol-toml': '^1.9.0'
-  'micromark-extension-math>katex': '^0.19.0'
